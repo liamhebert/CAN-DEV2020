@@ -13,6 +13,5 @@ data = req.text
 
 tags = soup.find_all('a')
 
-for tag in tags:
-    print(tag.get('href'))
-
+for year in range(2003,nowyear):
+    wget.download("http://donnees-data.tpsgc-pwgsc.gc.ca/ba1/pt-tp/pt-tp-"+str(year)+"-eng.csv")      
