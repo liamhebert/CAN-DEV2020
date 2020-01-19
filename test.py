@@ -12,28 +12,22 @@ import plotly.graph_objs as go
 
 app_color = {"graph_bg": "#082255", "graph_line": "#007ACE"}
 
-total_tp_data = pd.read_csv('transfer_payment.csv',usecols=['FSCL_YR', 'MINC', 'DepartmentNumber-Numéro-de-Ministère',
-        'RCPNT_CLS_EN_DESC', 'RCPNT_NML_EN_DESC', 'TOT_CY_XPND_AMT', 'AGRG_PYMT_AMT'])
+df = pd.read_csv('pt-tp-2019-eng.csv', usecols=['FSCL_YR', 'MINC', 'DepartmentNumber-Numéro-de-Ministère',
+        'RCPNT_CLS_EN_DESC', 'RCPNT_NML_EN_DESC', 'CTY_EN_NM',
+       'PROVTER_EN', 'CNTRY_EN_NM', 'TOT_CY_XPND_AMT', 'AGRG_PYMT_AMT'])
 
-df_department = {}
-df_department_agg = {}
-for i in range(7):
-    df_department[2013 + i] = pd.read_csv('excel_sheets/transfer_payment_{}.csv'.format(13+i), usecols=['FSCL_YR', 'MINC', 'DepartmentNumber-Numéro-de-Ministère',
-        'RCPNT_CLS_EN_DESC', 'RCPNT_NML_EN_DESC', 'TOT_CY_XPND_AMT', 'AGRG_PYMT_AMT'])
+department_dict = pickle.load(open("department.p", "rb"))
+ministry_dict = pickle.load(open("mine.p", "rb"))
+funding_allocation = df[["DepartmentNumber-Numéro-de-Ministère", "AGRG_PYMT_AMT"]]
+for index, row in funding_allocation.iterrows():
+    key = row['DepartmentNumber-Numéro-de-Ministère']
+    if key in department_dict.keys():
+        funding_allocation.at[index, 'DepartmentNumber-Numéro-de-Ministère'] = str(department_dict[key])[2:-2]
+    else:
+        funding_allocation.drop(index, axis=0)
+department_spending = copy.deepcopy(funding_allocation)
+department_spending = department_spending.groupby(["DepartmentNumber-Numéro-de-Ministère"], as_index=False).sum()
 
-    department_dict = pickle.load(open("department.p", "rb"))
-    ministry_dict = pickle.load(open("mine.p", "rb"))
-    funding_allocation = df_department[2013 + i][["DepartmentNumber-Numéro-de-Ministère", "AGRG_PYMT_AMT"]]
-    for index, row in funding_allocation.iterrows():
-        key = row['DepartmentNumber-Numéro-de-Ministère']
-        if key in department_dict.keys():
-            funding_allocation.at[index, 'DepartmentNumber-Numéro-de-Ministère'] = str(department_dict[key])[2:-2]
-        else:
-            funding_allocation.drop(index, axis=0)
-    department_spending = copy.deepcopy(funding_allocation)
-    department_spending = department_spending.groupby(["DepartmentNumber-Numéro-de-Ministère"], as_index=False).sum()
-
-    df_department_agg[2013 + i] = department_spending
 
 class Page:
     def __init__(self, name, url):
@@ -93,7 +87,6 @@ def build_year_slider():
         marks={i: '{}'.format(i + 2003) for i in range(17)},
         value=16,
         updatemode='drag'
-        id= 'year_slider'
     )
 
 def build_pie(id):
@@ -260,16 +253,10 @@ def load_page(url):
 
 @app.callback(
     Output(component_id='funding-allocation', component_property='figure'),
-    [Input(component_id='table_fed', component_property='selected_rows')]
-     #Input(component_id='year_slider', component_property='value')],
+    [Input(component_id='table_fed', component_property='selected_rows')],
 )
 def funding_allocaton(selected_rows):
-    print(total_tp_data.head())
-    funding allocation = total_tp_data.iloc['2019']
-    print(funding_allocation.head())
-
-    funding_allocation = funding_allocation[].iloc[selected_rows]
-    print(funding_allocation.head())
+    funding_allocation = department_spending.iloc[selected_rows]
 
     funding_allocation["AGRG_PYMT_AMT"].astype(int)
     return {
