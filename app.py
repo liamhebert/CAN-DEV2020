@@ -277,7 +277,7 @@ def gen_wind_histogram(selected_check):
     :params interval: upadte the graph based on an interval
     """
     #will update to list later for year and total amount
-    # 001 will have to be changed to whatever was selected 
+    # 001 will have to be changed to whatever was selected
     total_dict = {'2013':0,'2014':0,'2015':0,'2016':0,'2017':0,'2018':0,'2019':0}
     years_list = [2013,2014,2015,2016,2017,2018,2019]
 
