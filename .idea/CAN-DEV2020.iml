@@ -4,7 +4,11 @@
     <content url="file://$MODULE_DIR$" />
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     <orderEntry type="jdk" jdkName="Python 3.7 (CAN-DEV2020)" jdkType="Python SDK" />
+=======
+    <orderEntry type="jdk" jdkName="Python 3.7" jdkType="Python SDK" />
+>>>>>>> 2fe8822eddc24065c4a100a48447f43f31ce3fa5
     <orderEntry type="sourceFolder" forTests="false" />
   </component>
 =======
