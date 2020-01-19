@@ -9,21 +9,28 @@ import dash_core_components as dcc
 import pickle
 import pandas as pd
 
-df = pd.read_csv('pt-tp-2019-eng.csv', usecols=['FSCL_YR', 'MINC', 'DepartmentNumber-Numéro-de-Ministère',
-        'RCPNT_CLS_EN_DESC', 'RCPNT_NML_EN_DESC', 'CTY_EN_NM',
-       'PROVTER_EN', 'CNTRY_EN_NM', 'TOT_CY_XPND_AMT', 'AGRG_PYMT_AMT'])
+app_color = {"graph_bg": "#082255", "graph_line": "#007ACE"}
 
-department_dict = pickle.load(open("department.p", "rb"))
-ministry_dict = pickle.load(open("mine.p", "rb"))
-funding_allocation = df[["DepartmentNumber-Numéro-de-Ministère", "AGRG_PYMT_AMT"]]
-for index, row in funding_allocation.iterrows():
-    key = row['DepartmentNumber-Numéro-de-Ministère']
-    if key in department_dict.keys():
-        funding_allocation.at[index, 'DepartmentNumber-Numéro-de-Ministère'] = str(department_dict[key])[2:-2]
-    else:
-        funding_allocation.drop(index, axis=0)
-department_spending = copy.deepcopy(funding_allocation)
-department_spending = department_spending.groupby(["DepartmentNumber-Numéro-de-Ministère"], as_index=False).sum()
+df_department = {}
+df_department_agg = {}
+for i in range(7):
+    df_department[2013 + i] = pd.read_csv('excel_sheets/transfer_payment_{}.csv'.format(13+i), usecols=['FSCL_YR', 'MINC', 'DepartmentNumber-Numéro-de-Ministère',
+        'RCPNT_CLS_EN_DESC', 'RCPNT_NML_EN_DESC', 'TOT_CY_XPND_AMT', 'AGRG_PYMT_AMT'])
+
+    department_dict = pickle.load(open("department.p", "rb"))
+    ministry_dict = pickle.load(open("mine.p", "rb"))
+    funding_allocation = df_department[2013 + i][["DepartmentNumber-Numéro-de-Ministère", "AGRG_PYMT_AMT"]]
+    for index, row in funding_allocation.iterrows():
+        key = row['DepartmentNumber-Numéro-de-Ministère']
+        if key in department_dict.keys():
+            funding_allocation.at[index, 'DepartmentNumber-Numéro-de-Ministère'] = str(department_dict[key])[2:-2]
+        else:
+            funding_allocation.drop(index, axis=0)
+    department_spending = copy.deepcopy(funding_allocation)
+    department_spending = department_spending.groupby(["DepartmentNumber-Numéro-de-Ministère"], as_index=False).sum()
+
+    df_department_agg[2013 + i] = department_spending
+
 
 
 class Page:
@@ -61,6 +68,7 @@ def build_table(data, height, width, name):
                         'color': 'red',
                     },
                 ],
+                selected_rows=[51],
                 style_as_list_view=True,
                 style_cell={
                     'textAlign': 'left',
@@ -124,6 +132,29 @@ def build_header(title, subparagraph):
         className="app__header",
     )
 
+def build_graph(title, id):
+    html.Div(
+        [
+            html.Div(
+                [
+                    html.H6(
+                        title, className="graph__title"
+                    )
+                ]
+            ),
+            dcc.Graph(
+                id=id,
+                figure=dict(
+                    layout=dict(
+                        plot_bgcolor=app_color["graph_bg"],
+                        paper_bgcolor=app_color["graph_bg"],
+                    )
+                ),
+            ),
+        ],
+        className="graph__container first",
+    ),
+
 
 d = {'Department': ['Department of Defence', 'Department of Agriculture'], 'Funding': [3, 4]}
 print(d)
@@ -145,10 +176,12 @@ federal_page = html.Div(
             build_year_slider()
         ], className='slider__container'),
         html.Div([
-            build_table(department_spending, 300, 300, "fed"),
+            build_table(df_department_agg[2019], 300, 300, "fed"),
+            build_graph('ANNUAL SPENDING', 'annual-spending'),
             html.Div(id='test'),
             html.Div(id='test2'),
-        ], className="app__content")
+        ], className="app__content"),
+        build_graph('ANNUAL SPENDING', 'annual-spending'),
     ]
 )
 
@@ -198,6 +231,39 @@ def create_business_page(name, data):
     )
 
     return html_div
+
+@app.callback(
+    Output(component_id='annual-spending', component_property='figure'),
+    [Input(component_id='table_fed', component_property='selected_rows'), Input(component_id='url', component_property='pathname')],
+)
+def build_spending_graph(active_rows, url):
+    lines = {}
+
+    years_list = [2013, 2014, 2015, 2016, 2017, 2018, 2019]
+    for agency in df_department_agg[2019]['DepartmentNumber-Numéro-de-Ministère'].iloc[active_rows]:
+        lines[agency] = {'2013': 0, '2014': 0, '2015': 0, '2016': 0, '2017': 0, '2018': 0, '2019': 0}
+        for year in years_list:
+            lines[agency][str(year)] = df_department_agg[year].loc[[agency]]['AGRG_PYMT_AMT']
+    print("HERE")
+    print(lines)
+    data = [
+        dict(
+            x=years_list,
+            y=list(lines.values())
+        )
+    ]
+    layout = dict(
+        height=350,
+        plot_bgcolor=app_color["graph_bg"],
+        paper_bgcolor=app_color["graph_bg"],
+        font={"color": "#fff"},
+        autosize=False,
+        xaxis={'type': 'log', 'title': 'Year'},
+        yaxis={'title': 'Payment'},
+        margin={'l': 40, 'b': 40, 't': 10, 'r': 10},
+    )
+
+    return dict(data=data, layout=layout)
 
 
 @app.callback(

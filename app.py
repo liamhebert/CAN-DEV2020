@@ -16,9 +16,15 @@ from db.api import get_wind_data, get_wind_data_by_id
 import pandas as pd
 import test
 
-df = pd.read_csv('pt-tp-2019-eng.csv', usecols=['FSCL_YR', 'MINC', 'DepartmentNumber-Numéro-de-Ministère',
+df = {}
+for i in range(7):
+    df[2013 + i] = pd.read_csv('pt-tp-{}-eng.csv'.format(2013+i), usecols=['FSCL_YR', 'MINC', 'DepartmentNumber-Numéro-de-Ministère',
         'RCPNT_CLS_EN_DESC', 'RCPNT_NML_EN_DESC', 'CTY_EN_NM',
        'PROVTER_EN', 'CNTRY_EN_NM', 'TOT_CY_XPND_AMT', 'AGRG_PYMT_AMT'])
+
+# df = pd.read_csv('pt-tp-2019-eng.csv', usecols=['FSCL_YR', 'MINC', 'DepartmentNumber-Numéro-de-Ministère',
+#         'RCPNT_CLS_EN_DESC', 'RCPNT_NML_EN_DESC', 'CTY_EN_NM',
+#        'PROVTER_EN', 'CNTRY_EN_NM', 'TOT_CY_XPND_AMT', 'AGRG_PYMT_AMT'])
 
 '''df = pd.read_csv('transfer_payment.csv', usecols=['FSCL_YR', 'MINC', 'DepartmentNumber-Numéro-de-Ministère',
         'RCPNT_CLS_EN_DESC', 'RCPNT_NML_EN_DESC', 'CTY_EN_NM',
@@ -31,6 +37,9 @@ print(df['FSCL_YR'].head())
 
 
 funding_allocation = df[["DepartmentNumber-Numéro-de-Ministère", "AGRG_PYMT_AMT"]]
+print(funding_allocation[1])
+for row in funding_allocation[1]:
+
 
 for index, row in funding_allocation.iterrows():
     key = row['DepartmentNumber-Numéro-de-Ministère']
@@ -38,7 +47,7 @@ for index, row in funding_allocation.iterrows():
         funding_allocation.at[index, 'DepartmentNumber-Numéro-de-Ministère'] = str(department_dict[key])[2:-2]
     else:
         funding_allocation.drop(index, axis=0)
-funding_allocation.groupby(["DepartmentNumber-Numéro-de-Ministère"]).sum()
+    funding_allocation.groupby(["DepartmentNumber-Numéro-de-Ministère"]).sum()
 
 for index, row in funding_allocation.iterrows():
     payment = row["AGRG_PYMT_AMT"]
@@ -51,12 +60,6 @@ print(type(funding_allocation["AGRG_PYMT_AMT"].tolist()[0]))
 print(funding_allocation["AGRG_PYMT_AMT"].tolist()[0])
 funding_allocation["AGRG_PYMT_AMT"].astype(int)
 print(funding_allocation["AGRG_PYMT_AMT"].dtypes)
-
-
-
-
-
-
 
 
 GRAPH_INTERVAL = os.environ.get("GRAPH_INTERVAL", 5000)
