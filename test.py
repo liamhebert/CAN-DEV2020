@@ -50,7 +50,6 @@ def build_table(data, height, width, name):
                     'color': 'white'
                 },
                 style_table={
-                    'overflowY': 'scroll',
                     'overflowX': 'ellipse',
                     'backgroundColor': '#082255',
                     'border-radius': '0.55rem',
