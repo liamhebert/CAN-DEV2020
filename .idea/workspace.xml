@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="98b0bc56-adf7-441d-a6c8-dd75bcc510bf" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/app.py" afterDir="false" />
+    <list default="true" id="98b0bc56-adf7-441d-a6c8-dd75bcc510bf" name="Default Changelist" comment="Things look fancy">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/test.py" beforeDir="false" afterPath="$PROJECT_DIR$/test.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -24,74 +24,12 @@
     <expand />
     <select />
   </component>
-  <component name="FileEditorManager">
-    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/app.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="111">
-              <caret line="340" column="18" selection-start-line="340" selection-start-column="4" selection-end-line="340" selection-end-column="18" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/test.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="210">
-              <caret line="36" column="60" selection-start-line="36" selection-start-column="60" selection-end-line="36" selection-end-column="60" />
-              <folding>
-                <element signature="e#0#11#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/data_download.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="192">
-              <caret line="12" column="39" selection-start-line="12" selection-start-column="39" selection-end-line="12" selection-end-column="39" />
-              <folding>
-                <element signature="e#0#19#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-    </leaf>
-  </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
         <option value="Python Script" />
       </list>
     </option>
-  </component>
-  <component name="FindInProjectRecents">
-    <findStrings>
-      <find>pie_</find>
-      <find>pie_graph__conta</find>
-      <find>pie_graph</find>
-      <find>build_spending_gra</find>
-      <find>funding_allocation</find>
-      <find>spending</find>
-      <find>annual-</find>
-      <find>build_pie</find>
-      <find>app</find>
-      <find>app_color</find>
-      <find>table_fed</find>
-      <find>gen_wind_histo</find>
-      <find>funding-allocation</find>
-      <find>head</find>
-      <find>me</find>
-      <find>build_spend</find>
-      <find>build_spending</find>
-      <find>build_graph</find>
-      <find>dict</find>
-      <find>selecte</find>
-      <find>df</find>
-    </findStrings>
   </component>
   <component name="Git.Settings">
     <option name="PREVIOUS_COMMIT_AUTHORS">
@@ -101,13 +39,6 @@
       </list>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
-  </component>
-  <component name="IdeDocumentHistory">
-    <option name="CHANGED_PATHS">
-      <list>
-        <option value="$PROJECT_DIR$/test.py" />
-      </list>
-    </option>
   </component>
   <component name="ProjectConfigurationFiles">
     <option name="files">
@@ -121,25 +52,6 @@
   </component>
   <component name="ProjectId" id="1WbfrMKRNkNweXyAQHSWAvhzlGg" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
-  <component name="ProjectView">
-    <navigator proportions="" version="1">
-      <foldersAlwaysOnTop value="true" />
-    </navigator>
-    <panes>
-      <pane id="Scope" />
-      <pane id="ProjectPane">
-        <subPane>
-          <expand>
-            <path>
-              <item name="CAN-DEV2020" type="b2602c69:ProjectViewProjectNode" />
-              <item name="CAN-DEV2020" type="462c0819:PsiDirectoryNode" />
-            </path>
-          </expand>
-          <select />
-        </subPane>
-      </pane>
-    </panes>
-  </component>
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showExcludedFiles" value="true" />
@@ -163,19 +75,7 @@
       <recent name="$PROJECT_DIR$" />
     </key>
   </component>
-  <component name="RunDashboard">
-    <option name="ruleStates">
-      <list>
-        <RuleState>
-          <option name="name" value="ConfigurationTypeDashboardGroupingRule" />
-        </RuleState>
-        <RuleState>
-          <option name="name" value="StatusDashboardGroupingRule" />
-        </RuleState>
-      </list>
-    </option>
-  </component>
-  <component name="RunManager" selected="Python.test">
+  <component name="RunManager" selected="Python.test1">
     <configuration name="test" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="CAN-DEV2020" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -199,15 +99,15 @@
       <method v="2" />
     </configuration>
     <configuration name="test1" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
-      <module name="CAN-DEV2020" />
+      <module name="CAN-DEV20202" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
       <envs>
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
-      <option name="SDK_HOME" value="" />
+      <option name="SDK_HOME" value="$USER_HOME$/.conda/envs/CAN-DEV2020/bin/python" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
-      <option name="IS_MODULE_SDK" value="true" />
+      <option name="IS_MODULE_SDK" value="false" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/test1.py" />
@@ -242,9 +142,9 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Python.test" />
-        <item itemvalue="Python.test2" />
         <item itemvalue="Python.test1" />
+        <item itemvalue="Python.test2" />
+        <item itemvalue="Python.test" />
       </list>
     </recent_temporary>
   </component>
@@ -330,29 +230,6 @@
     <option name="localTasksCounter" value="9" />
     <servers />
   </component>
-  <component name="ToolWindowManager">
-    <frame x="-7" y="-7" width="1295" height="695" extended-state="6" />
-    <editor active="true" />
-    <layout>
-      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.49698794" visible="true" weight="0.1952381" />
-      <window_info id="Structure" order="1" sideWeight="0.50301206" side_tool="true" visible="true" weight="0.1952381" />
-      <window_info id="Favorites" order="2" side_tool="true" />
-      <window_info anchor="bottom" id="Message" order="0" />
-      <window_info anchor="bottom" id="Find" order="1" />
-      <window_info active="true" anchor="bottom" id="Run" order="2" visible="true" weight="0.41238937" />
-      <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
-      <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
-      <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
-      <window_info anchor="bottom" id="TODO" order="6" weight="0.32920355" />
-      <window_info anchor="bottom" id="Version Control" order="7" />
-      <window_info anchor="bottom" id="Terminal" order="8" weight="0.32920355" />
-      <window_info anchor="bottom" id="Event Log" order="9" side_tool="true" />
-      <window_info anchor="bottom" id="Python Console" order="10" weight="0.3079646" />
-      <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
-      <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
-      <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
-    </layout>
-  </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Test file for tables" />
     <MESSAGE value="Update" />
@@ -365,6 +242,10 @@
       <screen x="0" y="0" width="1440" height="900" />
     </state>
     <state x="184" y="112" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.1440.900@0.0.1440.900" timestamp="1579417748855" />
+    <state x="415" y="76" key="#test1" timestamp="1579447396328">
+      <screen x="0" y="0" width="1440" height="900" />
+    </state>
+    <state x="415" y="76" key="#test1/0.0.1440.900@0.0.1440.900" timestamp="1579447396328" />
     <state x="415" y="46" key="#test2" timestamp="1579428220576">
       <screen x="0" y="0" width="1440" height="900" />
     </state>
@@ -373,26 +254,26 @@
       <screen x="0" y="0" width="1440" height="900" />
     </state>
     <state x="477" y="328" key="ANALYSIS_DLG_com.intellij.analysis.BaseAnalysisAction$1/0.0.1440.900@0.0.1440.900" timestamp="1579423603871" />
-    <state x="303" y="52" key="CommitChangelistDialog2" timestamp="1579422633978">
+    <state x="303" y="52" key="CommitChangelistDialog2" timestamp="1579448119455">
       <screen x="0" y="0" width="1440" height="900" />
     </state>
-    <state x="303" y="52" key="CommitChangelistDialog2/0.0.1440.900@0.0.1440.900" timestamp="1579422633978" />
-    <state width="1419" height="190" key="GridCell.Tab.0.bottom" timestamp="1579430452909">
+    <state x="303" y="52" key="CommitChangelistDialog2/0.0.1440.900@0.0.1440.900" timestamp="1579448119455" />
+    <state width="1419" height="321" key="GridCell.Tab.0.bottom" timestamp="1579447881662">
       <screen x="0" y="0" width="1440" height="900" />
     </state>
-    <state width="1419" height="190" key="GridCell.Tab.0.bottom/0.0.1440.900@0.0.1440.900" timestamp="1579430452909" />
-    <state width="1419" height="190" key="GridCell.Tab.0.center" timestamp="1579430452908">
+    <state width="1419" height="321" key="GridCell.Tab.0.bottom/0.0.1440.900@0.0.1440.900" timestamp="1579447881662" />
+    <state width="1419" height="321" key="GridCell.Tab.0.center" timestamp="1579447881661">
       <screen x="0" y="0" width="1440" height="900" />
     </state>
-    <state width="1419" height="190" key="GridCell.Tab.0.center/0.0.1440.900@0.0.1440.900" timestamp="1579430452908" />
-    <state width="1419" height="190" key="GridCell.Tab.0.left" timestamp="1579430452908">
+    <state width="1419" height="321" key="GridCell.Tab.0.center/0.0.1440.900@0.0.1440.900" timestamp="1579447881661" />
+    <state width="1419" height="321" key="GridCell.Tab.0.left" timestamp="1579447881660">
       <screen x="0" y="0" width="1440" height="900" />
     </state>
-    <state width="1419" height="190" key="GridCell.Tab.0.left/0.0.1440.900@0.0.1440.900" timestamp="1579430452908" />
-    <state width="1419" height="190" key="GridCell.Tab.0.right" timestamp="1579430452909">
+    <state width="1419" height="321" key="GridCell.Tab.0.left/0.0.1440.900@0.0.1440.900" timestamp="1579447881660" />
+    <state width="1419" height="321" key="GridCell.Tab.0.right" timestamp="1579447881661">
       <screen x="0" y="0" width="1440" height="900" />
     </state>
-    <state width="1419" height="190" key="GridCell.Tab.0.right/0.0.1440.900@0.0.1440.900" timestamp="1579430452909" />
+    <state width="1419" height="321" key="GridCell.Tab.0.right/0.0.1440.900@0.0.1440.900" timestamp="1579447881661" />
     <state x="221" y="89" key="SettingsEditor" timestamp="1579423556367">
       <screen x="0" y="0" width="1440" height="900" />
     </state>
@@ -405,24 +286,5 @@
       <screen x="0" y="0" width="1440" height="900" />
     </state>
     <state x="392" y="248" key="git4idea.merge.GitPullDialog/0.0.1440.900@0.0.1440.900" timestamp="1579427953461" />
-  </component>
-  <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/app.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="111">
-          <caret line="340" column="18" selection-start-line="340" selection-start-column="4" selection-end-line="340" selection-end-column="18" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/test.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="210">
-          <caret line="36" column="60" selection-start-line="36" selection-start-column="60" selection-end-line="36" selection-end-column="60" />
-          <folding>
-            <element signature="e#0#11#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
   </component>
 </project>
