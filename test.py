@@ -1,6 +1,7 @@
 import dash
 import dash_table
 import dash_html_components as html
+from alpha_vantage.timeseries import TimeSeries
 from dash.dependencies import Input, Output
 import dash_core_components as dcc
 import pandas as pd
@@ -200,4 +201,7 @@ def load_page(url):
 
 
 if __name__ == '__main__':
+    ts = TimeSeries(key='TRNGRDL7KZKFC5SD', output_format='pandas')
+    data, meta_data = ts.get_monthly(symbol='MSFT')
+    print(data)
     app.run_server(debug=True)
