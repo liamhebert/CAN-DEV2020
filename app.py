@@ -19,10 +19,6 @@ df = pd.read_csv('transfer_payment.csv', usecols=['FSCL_YR', 'MINC', 'Department
         'RCPNT_CLS_EN_DESC', 'RCPNT_NML_EN_DESC', 'CTY_EN_NM',
        'PROVTER_EN', 'CNTRY_EN_NM', 'TOT_CY_XPND_AMT', 'AGRG_PYMT_AMT'])
 
-
-for i, row in df.iterrows():
-      df.at[i, 'FSCL_YR'] = 2018
-
 department_dict = pickle.load( open( "department.p", "rb" ) )
 ministry_dict = pickle.load( open( "mine.p", "rb" ) )
 
@@ -281,15 +277,19 @@ def gen_wind_histogram(selected_check):
     :params interval: upadte the graph based on an interval
     """
     #will update to list later for year and total amount
-    total = 0
+    # 001 will have to be changed to whatever was selected 
+    total_dict = {'2013':0,'2014':0,'2015':0,'2016':0,'2017':0,'2018':0,'2019':0}
+    years_list = [2013,2014,2015,2016,2017,2018,2019]
+
     for department in range (len(df['DepartmentNumber-Numéro-de-Ministère'])):
         if (df['DepartmentNumber-Numéro-de-Ministère'][department] == '001'):
-            total += df['AGRG_PYMT_AMT'][department]
-
+            for x in total_dict.keys():
+                if x==str(df['FSCL_YR'][department]):
+                    total_dict[f"{x}"] += df['AGRG_PYMT_AMT'][department]
     data = [
         dict(
-            x=df['FSCL_YR'],
-            y=total,
+            x=years_list,
+            y=list(total_dict.values())
         )
     ]
     layout = dict(
