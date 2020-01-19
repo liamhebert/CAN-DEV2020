@@ -1,14 +1,30 @@
+import copy
+
 import dash
 import dash_table
 import dash_html_components as html
 from alpha_vantage.timeseries import TimeSeries
 from dash.dependencies import Input, Output
 import dash_core_components as dcc
+import pickle
 import pandas as pd
 
+df = pd.read_csv('pt-tp-2019-eng.csv', usecols=['FSCL_YR', 'MINC', 'DepartmentNumber-Numéro-de-Ministère',
+        'RCPNT_CLS_EN_DESC', 'RCPNT_NML_EN_DESC', 'CTY_EN_NM',
+       'PROVTER_EN', 'CNTRY_EN_NM', 'TOT_CY_XPND_AMT', 'AGRG_PYMT_AMT'])
 
-#  df = pd.read_csv('https://raw.githubusercontent.com/plotly/datasets/master/solar.csv')
-#  d = {'col1': [1, 2], 'col2': [3, 4]}
+department_dict = pickle.load(open("department.p", "rb"))
+ministry_dict = pickle.load(open("mine.p", "rb"))
+funding_allocation = df[["DepartmentNumber-Numéro-de-Ministère", "AGRG_PYMT_AMT"]]
+for index, row in funding_allocation.iterrows():
+    key = row['DepartmentNumber-Numéro-de-Ministère']
+    if key in department_dict.keys():
+        funding_allocation.at[index, 'DepartmentNumber-Numéro-de-Ministère'] = str(department_dict[key])[2:-2]
+    else:
+        funding_allocation.drop(index, axis=0)
+department_spending = copy.deepcopy(funding_allocation)
+department_spending = department_spending.groupby(["DepartmentNumber-Numéro-de-Ministère"], as_index=False).sum()
+
 
 class Page:
     def __init__(self, name, url):
@@ -17,28 +33,30 @@ class Page:
 
 
 def build_table(data, height, width, name):
+    print("NEW")
+    print(data)
+    print(data.columns)
     data_dict = data.to_dict('records')
-    for line in data_dict:
-        line['Funding'] = "${:,.2f}".format(line['Funding'])
+    print(data_dict)
     return html.Div(
         [
             dash_table.DataTable(
                 id='table_' + name,
                 data=data_dict,
-                columns=[{"name": i, "id": i} for i in df.columns],
+                columns=[{"name": i, "id": i} for i in data.columns],
                 row_selectable="multi",
                 style_data_conditional=[
                     {
                         'if': {
-                            'column_id': 'Funding',
-                            'filter_query': '{Funding} > 0'
+                            'column_id': 'AGRG_PYMT_AMT',
+                            'filter_query': '{AGRG_PYMT_AMT} > 0'
                         },
                         'color': 'green',
                     },
                     {
                         'if': {
-                            'column_id': 'Funding',
-                            'filter_query': '{Funding} < 0'
+                            'column_id': 'AGRG_PYMT_AMT',
+                            'filter_query': '{AGRG_PYMT_AMT} < 0'
                         },
                         'color': 'red',
                     },
@@ -47,17 +65,16 @@ def build_table(data, height, width, name):
                 style_cell={
                     'textAlign': 'left',
                     'backgroundColor': '#082255',
-                    'color': 'white'
+                    'color': 'white',
                 },
                 style_table={
                     'overflowX': 'ellipse',
                     'backgroundColor': '#082255',
                     'border-radius': '0.55rem',
-                    'padding': '20px',
-                    'box-shadow': '0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24)'
+                    'box-shadow': '0 3px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24)'
                 }),
 
-        ], className="wind__speed__container one-third column")
+        ], className="wind__speed__container one column")
 
 
 def build_year_slider():
@@ -128,7 +145,7 @@ federal_page = html.Div(
             build_year_slider()
         ], className='slider__container'),
         html.Div([
-            build_table(df, 300, 300, "fed"),
+            build_table(department_spending, 300, 300, "fed"),
             html.Div(id='test'),
             html.Div(id='test2'),
         ], className="app__content")
