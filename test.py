@@ -10,15 +10,15 @@ import pandas as pd
 #  d = {'col1': [1, 2], 'col2': [3, 4]}
 
 
-def build_table():
+def build_table(data):
     return dash_table.DataTable(
         id='table',
-        data=df.to_dict('records'),
+        data=data.to_dict('records'),
         columns=[{"name": i, "id": i} for i in df.columns],
         style_cell={'textAlign': 'left'},
         row_selectable="multi",
         selected_rows=[],
-        active_cell={'row': 0, 'column': 2, 'row_id': 1, 'column_id': 'col1'},
+        active_cell={'row': 0, 'column': 0, 'row_id': 0, 'column_id': 'col1'},
         style_data_conditional=[
             {
                 'if': {
@@ -36,11 +36,14 @@ df = pd.DataFrame(data=d)
 
 app = dash.Dash(__name__)
 
-app.layout = html.Div([
-    build_table(),
+federal_page = html.Div([
+    build_table(df),
     html.Div(id='test'),
     html.Div(id='test2'),
 ])
+
+app.layout = federal_page
+
 
 @app.callback(
     Output(component_id='test', component_property='children'),
