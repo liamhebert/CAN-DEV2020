@@ -1,362 +1,325 @@
-import os
-import pickle
-import pathlib
-import numpy as np
-import datetime as dt
+import copy
+
 import dash
-import dash_core_components as dcc
+import dash_table
 import dash_html_components as html
-import plotly.graph_objs as go
-
-from dash.exceptions import PreventUpdate
-from dash.dependencies import Input, Output, State
-from scipy.stats import rayleigh
-from db.api import get_wind_data, get_wind_data_by_id
-
+# from alpha_vantage.timeseries import TimeSeries
+from dash.dependencies import Input, Output
+import dash_core_components as dcc
+import pickle
 import pandas as pd
-import test
-
-df = {}
-for i in range(7):
-    df[2013 + i] = pd.read_csv('pt-tp-{}-eng.csv'.format(2013+i), usecols=['FSCL_YR', 'MINC', 'DepartmentNumber-Numéro-de-Ministère',
-        'RCPNT_CLS_EN_DESC', 'RCPNT_NML_EN_DESC', 'CTY_EN_NM',
-       'PROVTER_EN', 'CNTRY_EN_NM', 'TOT_CY_XPND_AMT', 'AGRG_PYMT_AMT'])
-
-# df = pd.read_csv('pt-tp-2019-eng.csv', usecols=['FSCL_YR', 'MINC', 'DepartmentNumber-Numéro-de-Ministère',
-#         'RCPNT_CLS_EN_DESC', 'RCPNT_NML_EN_DESC', 'CTY_EN_NM',
-#        'PROVTER_EN', 'CNTRY_EN_NM', 'TOT_CY_XPND_AMT', 'AGRG_PYMT_AMT'])
-
-'''df = pd.read_csv('transfer_payment.csv', usecols=['FSCL_YR', 'MINC', 'DepartmentNumber-Numéro-de-Ministère',
-        'RCPNT_CLS_EN_DESC', 'RCPNT_NML_EN_DESC', 'CTY_EN_NM',
-       'PROVTER_EN', 'CNTRY_EN_NM', 'TOT_CY_XPND_AMT', 'AGRG_PYMT_AMT'])'''
-
-department_dict = pickle.load( open( "department.p", "rb" ) )
-ministry_dict = pickle.load( open( "mine.p", "rb" ) )
-
-print(df['FSCL_YR'].head())
-
-
-funding_allocation = df[["DepartmentNumber-Numéro-de-Ministère", "AGRG_PYMT_AMT"]]
-print(funding_allocation[1])
-for row in funding_allocation[1]:
-
-
-for index, row in funding_allocation.iterrows():
-    key = row['DepartmentNumber-Numéro-de-Ministère']
-    if key in department_dict.keys():
-        funding_allocation.at[index, 'DepartmentNumber-Numéro-de-Ministère'] = str(department_dict[key])[2:-2]
-    else:
-        funding_allocation.drop(index, axis=0)
-    funding_allocation.groupby(["DepartmentNumber-Numéro-de-Ministère"]).sum()
-
-for index, row in funding_allocation.iterrows():
-    payment = row["AGRG_PYMT_AMT"]
-    if payment / funding_allocation["AGRG_PYMT_AMT"].sum() < 0.0005:
-       funding_allocation.at[index, 'DepartmentNumber-Numéro-de-Ministère'] = 'Other'
-
-funding_allocation["AGRG_PYMT_AMT"].astype(int)
-
-print(type(funding_allocation["AGRG_PYMT_AMT"].tolist()[0]))
-print(funding_allocation["AGRG_PYMT_AMT"].tolist()[0])
-funding_allocation["AGRG_PYMT_AMT"].astype(int)
-print(funding_allocation["AGRG_PYMT_AMT"].dtypes)
-
-
-GRAPH_INTERVAL = os.environ.get("GRAPH_INTERVAL", 5000)
-
-app = dash.Dash(
-    __name__,
-    meta_tags=[{"name": "viewport", "content": "width=device-width, initial-scale=1"}],
-)
-
-server = app.server
+import plotly.graph_objs as go
 
 app_color = {"graph_bg": "#082255", "graph_line": "#007ACE"}
 
-app.layout = html.Div(
-    [dcc.Dropdown(
-        id='my-dropdown',
-        options=[
-            {'label': 'Coke', 'value': 'COKE'},
-            {'label': 'Tesla', 'value': 'TSLA'},
-            {'label': 'Apple', 'value': 'AAPL'}
-        ],
-        value='COKE'
-    ),
-        # header
-        html.Div(
-            [
-                html.Div(
-                    [
-                        html.H4("CANDEV DATA CHALLENGE", className="app__header__title"),
-                        html.P(
-                            "This app summarizes and displays information related to deparment spending and programs funds allocation",
-                            className="app__header__title--grey",
-                        ),
-                    ],
-                    className="app__header__desc",
-                ),
-                html.Div(
-                    [
-                        html.Img(
-                            src=app.get_asset_url("candev-eng-new.png"),
-                            className="app__menu__img",
-                        )
-                    ],
-                    className="app__header__logo",
-                ),
-            ],
-            className="app__header",
-        ),
-        html.Div(
-            [
-                # wind speed
-                html.Div(
-                    [
-                        html.Div(
-                            [html.H6("WIND SPEED (MPH)", className="graph__title")]
-                        ),
-                        dcc.Graph(
-                            id="wind-speed",
-                            figure=dict(
-                                layout=dict(
-                                    plot_bgcolor=app_color["graph_bg"],
-                                    paper_bgcolor=app_color["graph_bg"],
-                                )
-                            ),
-                        ),
-                        dcc.Interval(
-                            id="wind-speed-update",
-                            interval=int(GRAPH_INTERVAL),
-                            n_intervals=0,
-                        ),
-                    ],
-                    className="two-thirds column wind__speed__container",
-                ),
-                html.Div(
-                    [
-                        # histogram
-                        html.Div(
-                            [
-                                html.Div(
-                                    [
-                                        html.H6(
-                                            "ANNUAL SPENDING", className="graph__title"
-                                        )
-                                    ]
-                                ),
-                                dcc.Graph(
-                                    id="annual-spending",
-                                    figure=dict(
-                                        layout=dict(
-                                            plot_bgcolor=app_color["graph_bg"],
-                                            paper_bgcolor=app_color["graph_bg"],
-                                        )
-                                    ),
-                                ),
-                            ],
-                            className="graph__container first",
-                        ),
-                        # wind direction
-                        html.Div(
-                            [
-                                html.Div(
-                                    [
-                                        html.H6(
-                                            "WIND DIRECTION", className="graph__title"
-                                        )
-                                    ]
-                                ),
-                                '''dcc.Graph(
-                                    id="wind-direction",
-                                    figure=dict(
-                                        layout=dict(
-                                            plot_bgcolor=app_color["graph_bg"],
-                                            paper_bgcolor=app_color["graph_bg"],
-                                        )
-                                    ),
-                                )''',
-                                dcc.Graph(id="wind-direction"),
-                            ],
-                            className="graph__container second",
-                        ),
-                    ],
-                    className="one-third column histogram__direction",
-                ),
-            ],
-            className="app__content",
-        ),
-    ],
-    className="app__container",
-)
+df_department = {}
+df_department_agg = {}
+for i in range(7):
+    df_department[2013 + i] = pd.read_csv('excel_sheets/transfer_payment_{}.csv'.format(13 + i),
+                                          usecols=['FSCL_YR', 'MINC', 'DepartmentNumber-Numéro-de-Ministère',
+                                                   'RCPNT_CLS_EN_DESC', 'RCPNT_NML_EN_DESC', 'TOT_CY_XPND_AMT',
+                                                   'AGRG_PYMT_AMT'])
 
-
-def get_current_time():
-    """ Helper function to get the current time in seconds. """
-
-    now = dt.datetime.now()
-    total_time = (now.hour * 3600) + (now.minute * 60) + (now.second)
-    return total_time
-
-
-@app.callback(
-    Output("wind-speed", "figure"), [Input("wind-speed-update", "n_intervals")]
-)
-def gen_wind_speed(interval):
-    """
-    Generate the wind speed graph.
-    :params interval: update the graph based on an interval
-    """
-
-    total_time = get_current_time()
-    df = get_wind_data(total_time - 200, total_time)
-
-    trace = dict(
-        type="scatter",
-        y=df["Speed"],
-        line={"color": "#42C4F7"},
-        hoverinfo="skip",
-        error_y={
-            "type": "data",
-            "array": df["SpeedError"],
-            "thickness": 1.5,
-            "width": 2,
-            "color": "#B4E8FC",
-        },
-        mode="lines",
-    )
-
-    layout = dict(
-        plot_bgcolor=app_color["graph_bg"],
-        paper_bgcolor=app_color["graph_bg"],
-        font={"color": "#fff"},
-        height=700,
-        xaxis={
-            "range": [0, 200],
-            "showline": True,
-            "zeroline": False,
-            "fixedrange": True,
-            "tickvals": [0, 50, 100, 150, 200],
-            "ticktext": ["200", "150", "100", "50", "0"],
-            "title": "Time Elapsed (sec)",
-        },
-        yaxis={
-            "range": [
-                min(0, min(df["Speed"])),
-                max(45, max(df["Speed"]) + max(df["SpeedError"])),
-            ],
-            "showgrid": True,
-            "showline": True,
-            "fixedrange": True,
-            "zeroline": False,
-            "gridcolor": app_color["graph_line"],
-            "nticks": max(6, round(df["Speed"].iloc[-1] / 10)),
-        },
-    )
-
-    return dict(data=[trace], layout=layout)
-
-
-@app.callback(
-    Output("wind-direction", "figure"), [Input("wind-speed-update", "n_intervals")]
-)
-def gen_wind_direction(interval):
-    """
-    Generate the wind direction graph.
-    :params interval: update the graph based on an interval
-
-"""
-    funding_allocation = df[["DepartmentNumber-Numéro-de-Ministère", "AGRG_PYMT_AMT"]]
-
+    department_dict = pickle.load(open("department.p", "rb"))
+    ministry_dict = pickle.load(open("mine.p", "rb"))
+    funding_allocation = df_department[2013 + i][["DepartmentNumber-Numéro-de-Ministère", "AGRG_PYMT_AMT"]]
     for index, row in funding_allocation.iterrows():
         key = row['DepartmentNumber-Numéro-de-Ministère']
         if key in department_dict.keys():
             funding_allocation.at[index, 'DepartmentNumber-Numéro-de-Ministère'] = str(department_dict[key])[2:-2]
         else:
             funding_allocation.drop(index, axis=0)
-    funding_allocation.groupby(["DepartmentNumber-Numéro-de-Ministère"]).sum()
+    department_spending = copy.deepcopy(funding_allocation)
+    department_spending = department_spending.groupby(["DepartmentNumber-Numéro-de-Ministère"], as_index=False).sum()
 
-    for index, row in funding_allocation.iterrows():
-        payment = row["AGRG_PYMT_AMT"]
-        if payment / funding_allocation["AGRG_PYMT_AMT"].sum() < 0.0005:
-            funding_allocation.at[index, 'DepartmentNumber-Numéro-de-Ministère'] = 'Other'
-
-    funding_allocation["AGRG_PYMT_AMT"].astype(int)
+    df_department_agg[2013 + i] = department_spending
 
 
-
-    return {
-        "data": [go.Pie(labels=funding_allocation["DepartmentNumber-Numéro-de-Ministère"].tolist(), values=funding_allocation["AGRG_PYMT_AMT"].tolist(),
-                        marker={'colors': ['#EF963B', '#C93277', '#349600', '#EF533B', '#57D4F1']}, textinfo='label')],
-        "layout": go.Layout(title=f"Cases Reported Monthly", margin={"l": 100, "r": 100, },
-                            legend={"x": 1, "y": 0.7})}
+class Page:
+    def __init__(self, name, url):
+        self.name = name
+        self.url = url
 
 
-    total_time = get_current_time()
-    ndf = get_wind_data_by_id(total_time)
-    val = df["Speed"].iloc[-1]
-    direction = [0, (df["Direction"][0] - 20), (ndf["Direction"][0] + 20), 0]
+def build_table(data, height, width, name):
+    print("NEW")
+    print(data)
+    print(data.columns)
+    data_dict = data.to_dict('records')
+    print(data_dict)
+    return html.Div(
+        [
+            dash_table.DataTable(
+                id='table_' + name,
+                data=data_dict,
+                columns=[{"name": i, "id": i} for i in data.columns],
+                row_selectable="multi",
+                style_data_conditional=[
+                    {
+                        'if': {
+                            'column_id': 'AGRG_PYMT_AMT',
+                            'filter_query': '{AGRG_PYMT_AMT} > 0'
+                        },
+                        'color': 'green',
+                    },
+                    {
+                        'if': {
+                            'column_id': 'AGRG_PYMT_AMT',
+                            'filter_query': '{AGRG_PYMT_AMT} < 0'
+                        },
+                        'color': 'red',
+                    },
+                ],
+                selected_rows=[0],
+                style_as_list_view=True,
+                style_cell={
+                    'textAlign': 'left',
+                    'backgroundColor': '#082255',
+                    'color': 'white',
+                },
+                style_table={
+                    'overflowX': 'ellipse',
+                    'backgroundColor': '#082255',
+                    'border-radius': '0.55rem',
+                    'box-shadow': '0 3px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24)'
+                }),
 
-    traces_scatterpolar = [
-        {"r": [0, val, val, 0], "fillcolor": "#084E8A"},
-        {"r": [0, val * 0.65, val * 0.65, 0], "fillcolor": "#B4E1FA"},
-        {"r": [0, val * 0.3, val * 0.3, 0], "fillcolor": "#EBF5FA"},
-    ]
+        ], className="wind__speed__container one column")
 
-    data = [
-        dict(
-            type="scatterpolar",
-            r=traces["r"],
-            theta=direction,
-            mode="lines",
-            fill="toself",
-            fillcolor=traces["fillcolor"],
-            line={"color": "rgba(32, 32, 32, .6)", "width": 1},
-        )
-        for traces in traces_scatterpolar
-    ]
+dept_record_table = {}
+def build_dept_table(data, name):
+    # get only dept records
+    print("loading")
+    dataNew = copy.deepcopy(data[2019])
+    dataNew = dataNew.drop(columns=['FSCL_YR', 'DepartmentNumber-Numéro-de-Ministère', 'TOT_CY_XPND_AMT', 'MINC'])
+    year_data = dataNew.to_dict('records')
 
-    layout = dict(
-        height=350,
-        plot_bgcolor=app_color["graph_bg"],
-        paper_bgcolor=app_color["graph_bg"],
-        font={"color": "#fff"},
-        autosize=False,
-        polar={
-            "bgcolor": app_color["graph_line"],
-            "radialaxis": {"range": [0, 45], "angle": 45, "dtick": 10},
-            "angularaxis": {"showline": False, "tickcolor": "white"},
-        },
-        showlegend=False,
+    return html.Div(
+        [
+            dash_table.DataTable(
+                id='table_dept_' + name,
+                data=year_data,
+                columns=[{"name": i, "id": i} for i in dataNew.columns],
+                row_selectable="multi",
+                style_data_conditional=[
+                    {
+                        'if': {
+                            'column_id': 'Grant',
+                            'filter_query': '{Grant} > 0'
+                        },
+                        'color': 'green',
+                    },
+                    {
+                        'if': {
+                            'column_id': 'Grant',
+                            'filter_query': '{Grant} < 0'
+                        },
+                        'color': 'red',
+                    },
+                ],
+                selected_rows=[0],
+                style_as_list_view=True,
+                style_cell={
+                    'textAlign': 'left',
+                    'backgroundColor': '#082255',
+                    'color': 'white',
+                },
+                style_table={
+                    'overflowX': 'ellipse',
+                    'backgroundColor': '#082255',
+                    'border-radius': '0.55rem',
+                    'box-shadow': '0 3px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24)'
+                }),
+
+        ], className="wind__speed__container one column")
+
+
+def build_year_slider():
+    return dcc.Slider(
+        id='year_slider',
+        min=0,
+        max=16,
+        marks={i: '{}'.format(i + 2003) for i in range(17)},
+        value=16,
+        updatemode='drag',
     )
 
-    return dict(data=data, layout=layout)
+
+def build_pie(id):
+    return html.Div([
+        html.Div(
+            dcc.Graph(id=id,
+                      )
+        )],
+        className="pie_graph__container",
+    )
+
+
+def build_nav_stack(stack):
+    children = []
+    for site in stack:
+        children.append(html.Li(html.A(site.name, href=site.url), className='crumb'))
+    return html.Div(children=[
+        html.Nav(children=html.Ol(children), className='crumbs')
+    ])
+
+
+def build_header(title, subparagraph):
+    # header
+    title = title.replace("_", " ")
+    return html.Div(
+        [
+            html.Div(
+                [
+                    html.H4(title, className="app__header__title"),
+                    html.P(
+                        subparagraph,
+                        className="app__header__title--grey",
+                    ),
+                ],
+                className="app__header__desc",
+            ),
+            html.Div(
+                [
+                    html.Img(
+                        src=app.get_asset_url("candev-eng-new.png"),
+                        className="app__menu__img",
+                    )
+                ],
+                className="app__header__logo",
+            ),
+        ],
+        className="app__header",
+    )
+
+
+def build_graph(title, id):
+    html.Div(
+        [
+            html.Div(
+                [
+                    html.H6(
+                        title, className="graph__title"
+                    )
+                ]
+            ),
+            dcc.Graph(
+                id=id,
+                figure=dict(
+                    layout=dict(
+                        plot_bgcolor=app_color["graph_bg"],
+                        paper_bgcolor=app_color["graph_bg"],
+                    )
+                ),
+            ),
+        ],
+        className="graph__container first",
+    ),
+
+
+d = {'Department': ['Department of Defence', 'Department of Agriculture'], 'Funding': [3, 4]}
+print(d)
+df = pd.DataFrame(data=d)
+
+app = dash.Dash(__name__, meta_tags=[{"name": "viewport", "content": "width=device-width, initial-scale=1"}])
+app.config.suppress_callback_exceptions = True
+app.layout = html.Div([
+    dcc.Location(id='url', refresh=False),
+    html.Div(id='content'),
+], className="app__container")
+
+federal_page = html.Div(
+    children=[
+        # dcc.Location(id='url', href="/federal"),
+        build_nav_stack([Page('Federal Overview', '\\')]),
+        build_header("Federal Overview", "Government funding per department"),
+        html.Div([
+            build_year_slider()
+        ], className='slider__container'),
+        html.Div([
+            build_table(df_department_agg[2019], 300, 300, "fed"),
+            build_graph('ANNUAL SPENDING', 'annual-spending'),
+            html.Div(id='test'),
+            html.Div(id='test2'),
+        ], className="app__content"),
+        build_pie("funding-allocation"),
+        build_graph('ANNUAL SPENDING', 'annual-spending'),
+    ]
+)
+
+nav_stack = [Page('Federal Overview', '\\')]
+
+
+def create_department_page(name, data):
+    # Data should contain all programs and their spending
+    while len(nav_stack) > 1:
+        nav_stack.pop()
+    nav_stack.append(Page(name.replace("_", " "), '/department/' + name))
+    html_div = html.Div(
+        children=[
+            build_nav_stack(nav_stack),
+            build_header(name.replace("_", " ") + " Overview", "Funding given to each program by the " + name.replace(
+                "_", " ")),
+            html.Div([
+                build_year_slider()
+            ], className='slider__container'),
+            html.Div([
+                build_dept_table(data, name),
+            ], className="app__content"),
+            html.Div(id='funding-allocation')
+        ]
+    )
+
+    return html_div
+
+
+def create_program_page(name, data):
+    while len(nav_stack) > 2:
+        nav_stack.pop()
+    nav_stack.append(Page(name, '/program/' + name))
+    # data should contain the businesses associated with that program
+    html_div = html.Div(
+        children=[
+
+        ]
+    )
+
+    return html_div
+
+
+def create_business_page(name, data):
+    while len(nav_stack) > 3:
+        nav_stack.pop()
+    nav_stack.append(Page(name, '/program/' + name))
+    # data should contain value of all programs funded to that business
+    html_div = html.Div(
+        children=[
+
+        ]
+    )
+
+    return html_div
 
 
 @app.callback(
-    #'test','children'
-    Output("annual-spending", "figure"), [Input("wind-speed-update", "n_intervals")]
+    Output(component_id='annual-spending', component_property='figure'),
+    [Input(component_id='table_fed', component_property='selected_rows'),
+     Input(component_id='url', component_property='pathname')],
 )
-#actual graph
-def gen_wind_histogram(selected_check):
-    """
-    Genererate wind histogram graph.
-    :params interval: upadte the graph based on an interval
-    """
-    #will update to list later for year and total amount
-    # 001 will have to be changed to whatever was selected
-    total_dict = {'2013':0,'2014':0,'2015':0,'2016':0,'2017':0,'2018':0,'2019':0}
-    years_list = [2013,2014,2015,2016,2017,2018,2019]
+def build_spending_graph(active_rows, url):
+    lines = {}
 
-    for department in range (len(df['DepartmentNumber-Numéro-de-Ministère'])):
-        if (df['DepartmentNumber-Numéro-de-Ministère'][department] == '001'):
-            for x in total_dict.keys():
-                if x==str(df['FSCL_YR'][department]):
-                    total_dict[f"{x}"] += df['AGRG_PYMT_AMT'][department]
+    years_list = [2013, 2014, 2015, 2016, 2017, 2018, 2019]
+    for agency in df_department_agg[2019]['DepartmentNumber-Numéro-de-Ministère'].iloc[active_rows]:
+        lines[agency] = {'2013': 0, '2014': 0, '2015': 0, '2016': 0, '2017': 0, '2018': 0, '2019': 0}
+        for year in years_list:
+            lines[agency][str(year)] = df_department_agg[year].loc[[agency]]['AGRG_PYMT_AMT']
+    print("HERE")
+    print(lines)
     data = [
         dict(
             x=years_list,
-            y=list(total_dict.values())
+            y=list(lines.values())
         )
     ]
     layout = dict(
@@ -373,8 +336,83 @@ def gen_wind_histogram(selected_check):
     return dict(data=data, layout=layout)
 
 
+<<<<<<< HEAD
 if __name__ == "__main__":
 <<<<<<< HEAD
+=======
+@app.callback(
+    Output(component_id='test', component_property='children'),
+    [Input(component_id='table', component_property='selected_rows')],
+)
+def update_output_div(input_value):
+    return input_value
+
+
+@app.callback(
+    Output(component_id='url', component_property='pathname'),
+    [Input(component_id='table_fed', component_property='active_cell')]
+)
+def find_active_cell_fed(active_cell):
+    # print(active_cell['row'])
+    # print(df_department_agg[2019].iloc([int(active_cell['row'])]))
+    if active_cell['column'] == 0:
+        key = df_department_agg[2019].loc[active_cell['row'], 'DepartmentNumber-Numéro-de-Ministère'].replace(" ", "_")
+        return "/department/" + key
+
+
+@app.callback(
+    Output(component_id='content', component_property='children'),
+    [Input(component_id='url', component_property='pathname')]
+)
+def load_page(url):
+    if url == '/':
+        return federal_page
+    format_url = url.split('/')
+    if format_url[1] == 'federal':
+        return federal_page
+    elif format_url[1] == 'department':
+        return create_department_page(format_url[2], df_department)
+    elif format_url[1] == 'program':
+        return create_program_page(format_url[2], df_department)
+    elif format_url[1] == 'business':
+        return create_business_page(format_url[2], df_department)
+    else:
+        return '404'
+
+
+@app.callback(
+    Output(component_id='funding-allocation', component_property='figure'),
+    [Input(component_id='table_fed', component_property='selected_rows'),
+     Input(component_id='year_slider', component_property='value')],
+)
+def funding_allocaton(selected_rows, value):
+    #print(total_tp_data.head())
+    funding_allocation = df_department_agg[value+2003]
+    print(funding_allocation.head())
+    print(selected_rows)
+
+    print(len(funding_allocation.index))
+
+    for index in selected_rows:
+        if index < len(funding_allocation.index):
+            funding_allocation = funding_allocation.iloc[selected_rows]
+    print(funding_allocation.head())
+
+
+
+    funding_allocation["AGRG_PYMT_AMT"].astype(int)
+    return {
+        "data": [go.Pie(labels=funding_allocation["DepartmentNumber-Numéro-de-Ministère"].tolist(),
+                        values=funding_allocation["AGRG_PYMT_AMT"].tolist(),
+                        marker={'colors': ['#EF963B', '#C93277', '#349600', '#EF533B', '#57D4F1']}, textinfo='label')],
+        "layout": go.Layout(title=f"Funding Allocation", margin={"l": 300, "r": 300, }, legend={"x": 1, "y": 0.7})}
+
+
+if __name__ == '__main__':
+    # ts = TimeSeries(key='TRNGRDL7KZKFC5SD', output_format='pandas')
+    # data, meta_data = ts.get_monthly(symbol='MSFT')
+    # print(data)
+>>>>>>> cafc6523785a0bb3d1a6e3f9f18187f1bf390076
     app.run_server(debug=True)
 =======
     app.run_server(debug=True)
