@@ -16,6 +16,26 @@ from db.api import get_wind_data, get_wind_data_by_id
 import pandas as pd
 import test
 
+df_department = {}
+df_department_agg = {}
+for i in range(7):
+    df_department[2013 + i] = pd.read_csv('excel_sheets/transfer_payment_{}.csv'.format(13+i), usecols=['FSCL_YR', 'MINC', 'DepartmentNumber-Numéro-de-Ministère',
+        'RCPNT_CLS_EN_DESC', 'RCPNT_NML_EN_DESC', 'TOT_CY_XPND_AMT', 'AGRG_PYMT_AMT'])
+
+    department_dict = pickle.load(open("department.p", "rb"))
+    ministry_dict = pickle.load(open("mine.p", "rb"))
+    funding_allocation = df_department[2013 + i][["DepartmentNumber-Numéro-de-Ministère", "AGRG_PYMT_AMT"]]
+    for index, row in funding_allocation.iterrows():
+        key = row['DepartmentNumber-Numéro-de-Ministère']
+        if key in department_dict.keys():
+            funding_allocation.at[index, 'DepartmentNumber-Numéro-de-Ministère'] = str(department_dict[key])[2:-2]
+        else:
+            funding_allocation.drop(index, axis=0)
+    department_spending = copy.deepcopy(funding_allocation)
+    department_spending = department_spending.groupby(["DepartmentNumber-Numéro-de-Ministère"], as_index=False).sum()
+
+    df_department_agg[2013 + i] = department_spending
+
 df = pd.read_csv('pt-tp-2019-eng.csv', usecols=['FSCL_YR', 'MINC', 'DepartmentNumber-Numéro-de-Ministère',
         'RCPNT_CLS_EN_DESC', 'RCPNT_NML_EN_DESC', 'CTY_EN_NM',
        'PROVTER_EN', 'CNTRY_EN_NM', 'TOT_CY_XPND_AMT', 'AGRG_PYMT_AMT'])

@@ -12,8 +12,8 @@ import plotly.graph_objs as go
 
 app_color = {"graph_bg": "#082255", "graph_line": "#007ACE"}
 
-total_tp_data = pd.read_csv('transfer_payment.csv',usecols=['FSCL_YR', 'MINC', 'DepartmentNumber-Numéro-de-Ministère',
-        'RCPNT_CLS_EN_DESC', 'RCPNT_NML_EN_DESC', 'TOT_CY_XPND_AMT', 'AGRG_PYMT_AMT'])
+#total_tp_data = pd.read_csv('transfer_payment.csv',usecols=['FSCL_YR', 'MINC', 'DepartmentNumber-Numéro-de-Ministère',
+       # 'RCPNT_CLS_EN_DESC', 'RCPNT_NML_EN_DESC', 'TOT_CY_XPND_AMT', 'AGRG_PYMT_AMT'])
 
 df_department = {}
 df_department_agg = {}
@@ -92,7 +92,7 @@ def build_year_slider():
         max=16,
         marks={i: '{}'.format(i + 2003) for i in range(17)},
         value=16,
-        updatemode='drag'
+        updatemode='drag',
         id= 'year_slider'
     )
 
@@ -260,15 +260,16 @@ def load_page(url):
 
 @app.callback(
     Output(component_id='funding-allocation', component_property='figure'),
-    [Input(component_id='table_fed', component_property='selected_rows')]
-     #Input(component_id='year_slider', component_property='value')],
+    [Input(component_id='table_fed', component_property='selected_rows'),
+     Input(component_id='year_slider', component_property='value')],
 )
-def funding_allocaton(selected_rows):
-    print(total_tp_data.head())
-    funding allocation = total_tp_data.iloc['2019']
+def funding_allocaton(selected_rows, value):
+    #print(total_tp_data.head())
+    funding_allocation = df_department_agg[value+2003]
     print(funding_allocation.head())
+    print(selected_rows)
 
-    funding_allocation = funding_allocation[].iloc[selected_rows]
+    funding_allocation = funding_allocation.iloc[selected_rows]
     print(funding_allocation.head())
 
     funding_allocation["AGRG_PYMT_AMT"].astype(int)
