@@ -89,6 +89,29 @@ def build_year_slider():
         updatemode='drag'
     )
 
+def build_spending_graph(id):
+    return   html.Div(
+                            [
+                                html.Div(
+                                    [
+                                        html.H6(
+                                            "ANNUAL SPENDING", className="graph__title"
+                                        )
+                                    ]
+                                ),
+                                dcc.Graph(
+                                    id="annual-spending",
+                                    figure=dict(
+                                        layout=dict(
+                                            plot_bgcolor=app_color["graph_bg"],
+                                            paper_bgcolor=app_color["graph_bg"],
+                                        )
+                                    ),
+                                ),
+                            ],
+                            className="graph__container first",
+                        )
+
 def build_pie(id):
 
     return html.Div([
@@ -162,7 +185,8 @@ federal_page = html.Div(
             html.Div(id='test'),
             html.Div(id='test2'),
         ], className="app__content"),
-        build_pie("funding-allocation")
+        build_pie("funding-allocation"),
+        build_spending_graph("funding-allocation")
     ]
 )
 
@@ -264,6 +288,49 @@ def funding_allocaton(selected_rows):
                         values=funding_allocation["AGRG_PYMT_AMT"].tolist(),
                         marker={'colors': ['#EF963B', '#C93277', '#349600', '#EF533B', '#57D4F1']}, textinfo='label')],
         "layout": go.Layout(title=f"Funding Allocation", margin={"l": 300, "r": 300, }, legend={"x": 1, "y": 0.7})}
+
+
+@app.callback(
+    #'test','children'
+    Output("annual-spending", "figure"),
+    [Input(component_id='table_fed', component_property='selected_rows')],
+)
+#actual graph
+def gen_wind_histogram(selected_rows):
+    """
+    Genererate wind histogram graph.
+    :params interval: upadte the graph based on an interval
+    """
+    print ('the columns are', df.columns)
+    #will update to list later for year and total amount
+    # 001 will have to be changed to whatever was selected
+    total_dict = {'2013':0,'2014':0,'2015':0,'2016':0,'2017':0,'2018':0,'2019':0}
+    years_list = [2013,2014,2015,2016,2017,2018,2019]
+
+    for department in range (len(df['DepartmentNumber-Numéro-de-Ministère'])):
+        if (df['DepartmentNumber-Numéro-de-Ministère'][department] == '001'):
+            for x in total_dict.keys():
+                if x==str(df['FSCL_YR'][department]):
+                    total_dict[f"{x}"] += df['AGRG_PYMT_AMT'][department]
+    data = [
+        dict(
+            x=years_list,
+            y=list(total_dict.values())
+        )
+    ]
+    layout = dict(
+        height=350,
+        plot_bgcolor=app_color["graph_bg"],
+        paper_bgcolor=app_color["graph_bg"],
+        font={"color": "#fff"},
+        autosize=False,
+        xaxis={'type': 'log', 'title': 'Year'},
+        yaxis={'title': 'Payment'},
+        margin={'l': 40, 'b': 40, 't': 10, 'r': 10},
+    )
+
+    return dict(data=data, layout=layout)
+
 
 
 if __name__ == '__main__':
