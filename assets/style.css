@@ -5,12 +5,26 @@ body {
 
 h6 {
     margin-top: 0;
+    color: #FFFFFF;
+}
+
+.crumbs ol {
+    list-style-type: none;
+    padding-left: 0;
 }
 
 .crumb {
-    list-style-type: none;
-    padding-left: 0;
     display: inline-block;
+}
+
+.crumb a {
+  color: #1EAEDB;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.crumb a:hover {
+  color: #0FA0CE;
 }
 
 .crumb a::after {
@@ -56,6 +70,15 @@ h6 {
     flex-direction: column;
     background-color: #082255;
     border-radius: 0.55rem;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+}
+
+.slider__container {
+    display: flex;
+    flex-direction: column;
+    background-color: #082255;
+    border-radius:0.55rem;
+    padding-top: 15px;
     box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
 }
 

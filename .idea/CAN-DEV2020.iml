@@ -3,6 +3,7 @@
   <component name="NewModuleRootManager">
     <content url="file://$MODULE_DIR$" />
 <<<<<<< HEAD
+<<<<<<< HEAD
     <orderEntry type="jdk" jdkName="Python 3.7 (CAN-DEV2020)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
   </component>
@@ -14,4 +15,9 @@
     <option name="PROJECT_TEST_RUNNER" value="Unittests" />
   </component>
 >>>>>>> 55b1262ef57a2531bd19b3237c28a00e4839ba49
+=======
+    <orderEntry type="jdk" jdkName="Python 3.7 (CAN-DEV2020)" jdkType="Python SDK" />
+    <orderEntry type="sourceFolder" forTests="false" />
+  </component>
+>>>>>>> 09a110aecd612b30ec57d7e84fadc14923656ecd
 </module>
