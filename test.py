@@ -290,10 +290,13 @@ def spending_graph(selected_rows):
     years_list = [2013,2014,2015,2016,2017,2018,2019]
 
     for department in range (len(df_annual_spending['DepartmentNumber-Numéro-de-Ministère'])):
-        if (df_annual_spending['DEPT_EN_DESC'][department] == names[0]):
-            for x in total_dict.keys():
-                if x==str(df_annual_spending['FSCL_YR'][department]):
-                    total_dict[f"{x}"] += df_annual_spending['AGRG_PYMT_AMT'][department]
+        try:
+            if (df_annual_spending['DEPT_EN_DESC'][department] == names[0]):
+                for x in total_dict.keys():
+                    if x==str(df_annual_spending['FSCL_YR'][department]):
+                        total_dict[f"{x}"] += df_annual_spending['AGRG_PYMT_AMT'][department]
+        except:
+            pass
 
     data = [
         dict(
