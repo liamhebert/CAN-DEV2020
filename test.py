@@ -54,14 +54,15 @@ def build_year_slider():
 def build_nav_stack(stack):
     children = []
     for site in stack:
-        children.append(dcc.Link(html.H5(site.name), href=site.url))
+        children.append(html.Li(html.A(site.name, href=site.url), className='crumb'))
     return html.Div(children=[
-        html.Nav(children=children, className='crumb')
+        html.Nav(children=html.Ol(children), className='crumbs')
     ])
 
 
 def build_header(title, subparagraph):
     # header
+    title = title.replace("_", " ")
     return html.Div(
         [
             html.Div(
@@ -118,11 +119,11 @@ def create_department_page(name, data):
     # Data should contain all programs and their spending
     while len(nav_stack) > 1:
         nav_stack.pop()
-    nav_stack.append(Page(name, '/department/' + name))
+    nav_stack.append(Page(name.replace("_", " "), '/department/' + name))
     html_div = html.Div(
         children=[
             build_nav_stack(nav_stack),
-            build_header(name + " Overview", "Funding given to each program by the " + name),
+            build_header(name.replace("_", " ") + " Overview", "Funding given to each program by the " + name),
             build_year_slider(),
             build_table(df, height=400, width=None, name="dept")
         ]
