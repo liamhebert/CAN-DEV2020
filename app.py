@@ -6,6 +6,7 @@ import datetime as dt
 import dash
 import dash_core_components as dcc
 import dash_html_components as html
+import plotly.graph_objs as go
 
 from dash.exceptions import PreventUpdate
 from dash.dependencies import Input, Output, State
@@ -15,12 +16,48 @@ from db.api import get_wind_data, get_wind_data_by_id
 import pandas as pd
 import test
 
-df = pd.read_csv('transfer_payment.csv', usecols=['FSCL_YR', 'MINC', 'DepartmentNumber-Numéro-de-Ministère',
+df = pd.read_csv('pt-tp-2019-eng.csv', usecols=['FSCL_YR', 'MINC', 'DepartmentNumber-Numéro-de-Ministère',
         'RCPNT_CLS_EN_DESC', 'RCPNT_NML_EN_DESC', 'CTY_EN_NM',
        'PROVTER_EN', 'CNTRY_EN_NM', 'TOT_CY_XPND_AMT', 'AGRG_PYMT_AMT'])
 
+'''df = pd.read_csv('transfer_payment.csv', usecols=['FSCL_YR', 'MINC', 'DepartmentNumber-Numéro-de-Ministère',
+        'RCPNT_CLS_EN_DESC', 'RCPNT_NML_EN_DESC', 'CTY_EN_NM',
+       'PROVTER_EN', 'CNTRY_EN_NM', 'TOT_CY_XPND_AMT', 'AGRG_PYMT_AMT'])'''
+
 department_dict = pickle.load( open( "department.p", "rb" ) )
 ministry_dict = pickle.load( open( "mine.p", "rb" ) )
+
+print(df['FSCL_YR'].head())
+
+
+funding_allocation = df[["DepartmentNumber-Numéro-de-Ministère", "AGRG_PYMT_AMT"]]
+
+for index, row in funding_allocation.iterrows():
+    key = row['DepartmentNumber-Numéro-de-Ministère']
+    if key in department_dict.keys():
+        funding_allocation.at[index, 'DepartmentNumber-Numéro-de-Ministère'] = str(department_dict[key])[2:-2]
+    else:
+        funding_allocation.drop(index, axis=0)
+funding_allocation.groupby(["DepartmentNumber-Numéro-de-Ministère"]).sum()
+
+for index, row in funding_allocation.iterrows():
+    payment = row["AGRG_PYMT_AMT"]
+    if payment / funding_allocation["AGRG_PYMT_AMT"].sum() < 0.0005:
+       funding_allocation.at[index, 'DepartmentNumber-Numéro-de-Ministère'] = 'Other'
+
+funding_allocation["AGRG_PYMT_AMT"].astype(int)
+
+print(type(funding_allocation["AGRG_PYMT_AMT"].tolist()[0]))
+print(funding_allocation["AGRG_PYMT_AMT"].tolist()[0])
+funding_allocation["AGRG_PYMT_AMT"].astype(int)
+print(funding_allocation["AGRG_PYMT_AMT"].dtypes)
+
+
+
+
+
+
+
 
 GRAPH_INTERVAL = os.environ.get("GRAPH_INTERVAL", 5000)
 
@@ -127,7 +164,7 @@ app.layout = html.Div(
                                         )
                                     ]
                                 ),
-                                dcc.Graph(
+                                '''dcc.Graph(
                                     id="wind-direction",
                                     figure=dict(
                                         layout=dict(
@@ -135,7 +172,8 @@ app.layout = html.Div(
                                             paper_bgcolor=app_color["graph_bg"],
                                         )
                                     ),
-                                ),
+                                )''',
+                                dcc.Graph(id="wind-direction"),
                             ],
                             className="graph__container second",
                         ),
@@ -223,12 +261,38 @@ def gen_wind_direction(interval):
     """
     Generate the wind direction graph.
     :params interval: update the graph based on an interval
-    """
+
+"""
+    funding_allocation = df[["DepartmentNumber-Numéro-de-Ministère", "AGRG_PYMT_AMT"]]
+
+    for index, row in funding_allocation.iterrows():
+        key = row['DepartmentNumber-Numéro-de-Ministère']
+        if key in department_dict.keys():
+            funding_allocation.at[index, 'DepartmentNumber-Numéro-de-Ministère'] = str(department_dict[key])[2:-2]
+        else:
+            funding_allocation.drop(index, axis=0)
+    funding_allocation.groupby(["DepartmentNumber-Numéro-de-Ministère"]).sum()
+
+    for index, row in funding_allocation.iterrows():
+        payment = row["AGRG_PYMT_AMT"]
+        if payment / funding_allocation["AGRG_PYMT_AMT"].sum() < 0.0005:
+            funding_allocation.at[index, 'DepartmentNumber-Numéro-de-Ministère'] = 'Other'
+
+    funding_allocation["AGRG_PYMT_AMT"].astype(int)
+
+
+
+    return {
+        "data": [go.Pie(labels=funding_allocation["DepartmentNumber-Numéro-de-Ministère"].tolist(), values=funding_allocation["AGRG_PYMT_AMT"].tolist(),
+                        marker={'colors': ['#EF963B', '#C93277', '#349600', '#EF533B', '#57D4F1']}, textinfo='label')],
+        "layout": go.Layout(title=f"Cases Reported Monthly", margin={"l": 100, "r": 100, },
+                            legend={"x": 1, "y": 0.7})}
+
 
     total_time = get_current_time()
-    df = get_wind_data_by_id(total_time)
+    ndf = get_wind_data_by_id(total_time)
     val = df["Speed"].iloc[-1]
-    direction = [0, (df["Direction"][0] - 20), (df["Direction"][0] + 20), 0]
+    direction = [0, (df["Direction"][0] - 20), (ndf["Direction"][0] + 20), 0]
 
     traces_scatterpolar = [
         {"r": [0, val, val, 0], "fillcolor": "#084E8A"},
