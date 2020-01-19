@@ -1,32 +1,5 @@
-<<<<<<< HEAD
-import flask
-import dash
-import dash_html_components as html
-import requests
-
-server = flask.Flask(__name__)
-
-# API Requests for news div
-news_requests = requests.get(
-    "https://newsapi.org/v2/top-headlines?sources=bbc-news&apiKey=da8e2e705b914f9f86ed2e9692e66012"
-)
-
-
-@server.route('/')
-def index():
-    return 'Hello Flask app'
-
-app = dash.Dash(
-    __name__,
-    server=server,
-    routes_pathname_prefix='/dash/'
-)
-
-app.layout = html.Div("My Dash app")
-
-if __name__ == '__main__':
-=======
 import os
+import pickle
 import pathlib
 import numpy as np
 import datetime as dt
@@ -39,6 +12,14 @@ from dash.dependencies import Input, Output, State
 from scipy.stats import rayleigh
 from db.api import get_wind_data, get_wind_data_by_id
 
+import pandas as pd
+
+df = pd.read_csv('transfer_payment.csv', usecols=['FSCL_YR', 'MINC', 'DepartmentNumber-Numéro-de-Ministère',
+        'RCPNT_CLS_EN_DESC', 'RCPNT_NML_EN_DESC', 'CTY_EN_NM',
+       'PROVTER_EN', 'CNTRY_EN_NM', 'TOT_CY_XPND_AMT', 'AGRG_PYMT_AMT'])
+
+department_dict = pickle.load( open( "department.p", "rb" ) )
+ministry_dict = pickle.load( open( "mine.p", "rb" ) )
 
 GRAPH_INTERVAL = os.environ.get("GRAPH_INTERVAL", 5000)
 
@@ -212,7 +193,6 @@ def get_current_time():
 def gen_wind_speed(interval):
     """
     Generate the wind speed graph.
-
     :params interval: update the graph based on an interval
     """
 
@@ -271,7 +251,6 @@ def gen_wind_speed(interval):
 def gen_wind_direction(interval):
     """
     Generate the wind direction graph.
-
     :params interval: update the graph based on an interval
     """
 
@@ -328,7 +307,6 @@ def gen_wind_direction(interval):
 def gen_wind_histogram(interval, wind_speed_figure, slider_value, auto_state):
     """
     Genererate wind histogram graph.
-
     :params interval: upadte the graph based on an interval
     :params wind_speed_figure: current wind speed graph
     :params slider_value: current slider value
@@ -484,5 +462,4 @@ def show_num_bins(autoValue, slider_value):
 
 
 if __name__ == "__main__":
->>>>>>> 55b1262ef57a2531bd19b3237c28a00e4839ba49
     app.run_server(debug=True)
