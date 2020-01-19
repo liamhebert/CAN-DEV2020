@@ -3,7 +3,7 @@ import copy
 import dash
 import dash_table
 import dash_html_components as html
-#from alpha_vantage.timeseries import TimeSeries
+# from alpha_vantage.timeseries import TimeSeries
 from dash.dependencies import Input, Output
 import dash_core_components as dcc
 import pickle
@@ -17,8 +17,10 @@ app_color = {"graph_bg": "#082255", "graph_line": "#007ACE"}
 df_department = {}
 df_department_agg = {}
 for i in range(7):
-    df_department[2013 + i] = pd.read_csv('excel_sheets/transfer_payment_{}.csv'.format(13+i), usecols=['FSCL_YR', 'MINC', 'DepartmentNumber-Numéro-de-Ministère',
-        'RCPNT_CLS_EN_DESC', 'RCPNT_NML_EN_DESC', 'TOT_CY_XPND_AMT', 'AGRG_PYMT_AMT'])
+    df_department[2013 + i] = pd.read_csv('excel_sheets/transfer_payment_{}.csv'.format(13 + i),
+                                          usecols=['FSCL_YR', 'MINC', 'DepartmentNumber-Numéro-de-Ministère',
+                                                   'RCPNT_CLS_EN_DESC', 'RCPNT_NML_EN_DESC', 'TOT_CY_XPND_AMT',
+                                                   'AGRG_PYMT_AMT'])
 
     department_dict = pickle.load(open("department.p", "rb"))
     ministry_dict = pickle.load(open("mine.p", "rb"))
@@ -33,7 +35,6 @@ for i in range(7):
     department_spending = department_spending.groupby(["DepartmentNumber-Numéro-de-Ministère"], as_index=False).sum()
 
     df_department_agg[2013 + i] = department_spending
-
 
 
 class Page:
@@ -87,9 +88,57 @@ def build_table(data, height, width, name):
 
         ], className="wind__speed__container one column")
 
+dept_record_table = {}
+def build_dept_table(data, name):
+    # get only dept records
+    print("loading")
+    dataNew = copy.deepcopy(data[2019])
+    dataNew = dataNew.drop(columns=['FSCL_YR', 'DepartmentNumber-Numéro-de-Ministère', 'TOT_CY_XPND_AMT', 'MINC'])
+    year_data = dataNew.to_dict('records')
+
+    return html.Div(
+        [
+            dash_table.DataTable(
+                id='table_dept_' + name,
+                data=year_data,
+                columns=[{"name": i, "id": i} for i in dataNew.columns],
+                row_selectable="multi",
+                style_data_conditional=[
+                    {
+                        'if': {
+                            'column_id': 'Grant',
+                            'filter_query': '{Grant} > 0'
+                        },
+                        'color': 'green',
+                    },
+                    {
+                        'if': {
+                            'column_id': 'Grant',
+                            'filter_query': '{Grant} < 0'
+                        },
+                        'color': 'red',
+                    },
+                ],
+                selected_rows=[0],
+                style_as_list_view=True,
+                style_cell={
+                    'textAlign': 'left',
+                    'backgroundColor': '#082255',
+                    'color': 'white',
+                },
+                style_table={
+                    'overflowX': 'ellipse',
+                    'backgroundColor': '#082255',
+                    'border-radius': '0.55rem',
+                    'box-shadow': '0 3px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24)'
+                }),
+
+        ], className="wind__speed__container one column")
+
 
 def build_year_slider():
     return dcc.Slider(
+        id='year_slider',
         min=0,
         max=16,
         marks={i: '{}'.format(i + 2003) for i in range(17)},
@@ -97,15 +146,15 @@ def build_year_slider():
         updatemode='drag'
     )
 
-def build_pie(id):
 
+def build_pie(id):
     return html.Div([
-                        html.Div(
-                                dcc.Graph(id=id,
-                                )
-                        )],
-                            className="pie_graph__container",
-                        )
+        html.Div(
+            dcc.Graph(id=id,
+                      )
+        )],
+        className="pie_graph__container",
+    )
 
 
 def build_nav_stack(stack):
@@ -144,6 +193,7 @@ def build_header(title, subparagraph):
         ],
         className="app__header",
     )
+
 
 def build_graph(title, id):
     html.Div(
@@ -210,9 +260,14 @@ def create_department_page(name, data):
     html_div = html.Div(
         children=[
             build_nav_stack(nav_stack),
-            build_header(name.replace("_", " ") + " Overview", "Funding given to each program by the " + name),
-            build_year_slider(),
-            build_table(df, height=400, width=None, name="dept"),
+            build_header(name.replace("_", " ") + " Overview", "Funding given to each program by the " + name.replace(
+                "_", " ")),
+            html.Div([
+                build_year_slider()
+            ], className='slider__container'),
+            html.Div([
+                build_dept_table(data, name),
+            ], className="app__content"),
             html.Div(id='funding-allocation')
         ]
     )
@@ -247,9 +302,11 @@ def create_business_page(name, data):
 
     return html_div
 
+
 @app.callback(
     Output(component_id='annual-spending', component_property='figure'),
-    [Input(component_id='table_fed', component_property='selected_rows'), Input(component_id='url', component_property='pathname')],
+    [Input(component_id='table_fed', component_property='selected_rows'),
+     Input(component_id='url', component_property='pathname')],
 )
 def build_spending_graph(active_rows, url):
     lines = {}
@@ -294,8 +351,11 @@ def update_output_div(input_value):
     [Input(component_id='table_fed', component_property='active_cell')]
 )
 def find_active_cell_fed(active_cell):
-    if active_cell['column'] == 1:
-        return '/department/Department_of_Defence'
+    # print(active_cell['row'])
+    # print(df_department_agg[2019].iloc([int(active_cell['row'])]))
+    if active_cell['column'] == 0:
+        key = df_department_agg[2019].loc[active_cell['row'], 'DepartmentNumber-Numéro-de-Ministère'].replace(" ", "_")
+        return "/department/" + key
 
 
 @app.callback(
@@ -309,13 +369,14 @@ def load_page(url):
     if format_url[1] == 'federal':
         return federal_page
     elif format_url[1] == 'department':
-        return create_department_page(format_url[2], df)
+        return create_department_page(format_url[2], df_department)
     elif format_url[1] == 'program':
-        return create_program_page(format_url[2], df)
+        return create_program_page(format_url[2], df_department)
     elif format_url[1] == 'business':
-        return create_business_page(format_url[2], df)
+        return create_business_page(format_url[2], df_department)
     else:
         return '404'
+
 
 @app.callback(
     Output(component_id='funding-allocation', component_property='figure'),
@@ -337,4 +398,3 @@ if __name__ == '__main__':
     # data, meta_data = ts.get_monthly(symbol='MSFT')
     # print(data)
     app.run_server(debug=True)
-
