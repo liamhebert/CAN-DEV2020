@@ -2,9 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="98b0bc56-adf7-441d-a6c8-dd75bcc510bf" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/CAN-DEV2020.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/CAN-DEV2020.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/app.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/test.py" beforeDir="false" afterPath="$PROJECT_DIR$/test.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -32,7 +30,7 @@
         <entry file="file://$PROJECT_DIR$/app.py">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="111">
-              <caret line="337" column="18" selection-start-line="337" selection-start-column="4" selection-end-line="337" selection-end-column="18" />
+              <caret line="340" column="18" selection-start-line="340" selection-start-column="4" selection-end-line="340" selection-end-column="18" />
             </state>
           </provider>
         </entry>
@@ -40,8 +38,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/test.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="156">
-              <caret line="303" column="30" selection-start-line="303" selection-start-column="30" selection-end-line="303" selection-end-column="30" />
+            <state relative-caret-position="210">
+              <caret line="36" column="60" selection-start-line="36" selection-start-column="60" selection-end-line="36" selection-end-column="60" />
               <folding>
                 <element signature="e#0#11#0" expanded="true" />
               </folding>
@@ -85,6 +83,14 @@
       <find>table_fed</find>
       <find>gen_wind_histo</find>
       <find>funding-allocation</find>
+      <find>head</find>
+      <find>me</find>
+      <find>build_spend</find>
+      <find>build_spending</find>
+      <find>build_graph</find>
+      <find>dict</find>
+      <find>selecte</find>
+      <find>df</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -328,12 +334,12 @@
     <frame x="-7" y="-7" width="1295" height="695" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.4987715" visible="true" weight="0.1952381" />
-      <window_info id="Structure" order="1" sideWeight="0.5012285" side_tool="true" visible="true" weight="0.1952381" />
+      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.49698794" visible="true" weight="0.1952381" />
+      <window_info id="Structure" order="1" sideWeight="0.50301206" side_tool="true" visible="true" weight="0.1952381" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" />
-      <window_info active="true" anchor="bottom" id="Run" order="2" visible="true" weight="0.279646" />
+      <window_info active="true" anchor="bottom" id="Run" order="2" visible="true" weight="0.41238937" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
@@ -404,14 +410,14 @@
     <entry file="file://$PROJECT_DIR$/app.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="111">
-          <caret line="337" column="18" selection-start-line="337" selection-start-column="4" selection-end-line="337" selection-end-column="18" />
+          <caret line="340" column="18" selection-start-line="340" selection-start-column="4" selection-end-line="340" selection-end-column="18" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/test.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="156">
-          <caret line="303" column="30" selection-start-line="303" selection-start-column="30" selection-end-line="303" selection-end-column="30" />
+        <state relative-caret-position="210">
+          <caret line="36" column="60" selection-start-line="36" selection-start-column="60" selection-end-line="36" selection-end-column="60" />
           <folding>
             <element signature="e#0#11#0" expanded="true" />
           </folding>

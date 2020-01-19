@@ -12,23 +12,29 @@ import plotly.graph_objs as go
 
 app_color = {"graph_bg": "#082255", "graph_line": "#007ACE"}
 
-df = pd.read_csv('pt-tp-2019-eng.csv', usecols=['FSCL_YR', 'MINC', 'DepartmentNumber-Numéro-de-Ministère',
-        'RCPNT_CLS_EN_DESC', 'RCPNT_NML_EN_DESC', 'CTY_EN_NM',
-       'PROVTER_EN', 'CNTRY_EN_NM', 'TOT_CY_XPND_AMT', 'AGRG_PYMT_AMT'])
+app_color = {"graph_bg": "#082255", "graph_line": "#007ACE"}
 
-department_dict = pickle.load(open("department.p", "rb"))
-ministry_dict = pickle.load(open("mine.p", "rb"))
-funding_allocation = df[["DepartmentNumber-Numéro-de-Ministère", "AGRG_PYMT_AMT"]]
-for index, row in funding_allocation.iterrows():
-    key = row['DepartmentNumber-Numéro-de-Ministère']
-    if key in department_dict.keys():
-        funding_allocation.at[index, 'DepartmentNumber-Numéro-de-Ministère'] = str(department_dict[key])[2:-2]
-    else:
-        funding_allocation.drop(index, axis=0)
-department_spending = copy.deepcopy(funding_allocation)
-department_spending = department_spending.groupby(["DepartmentNumber-Numéro-de-Ministère"], as_index=False).sum()
+df_department = {}
+df_department_agg = {}
+for i in range(7):
+    df_department[2013 + i] = pd.read_csv('excel_sheets/transfer_payment_{}.csv'.format(13+i), usecols=['FSCL_YR', 'MINC', 'DepartmentNumber-Numéro-de-Ministère',
+        'RCPNT_CLS_EN_DESC', 'RCPNT_NML_EN_DESC', 'TOT_CY_XPND_AMT', 'AGRG_PYMT_AMT'])
 
+    department_dict = pickle.load(open("department.p", "rb"))
+    ministry_dict = pickle.load(open("mine.p", "rb"))
+    funding_allocation = df_department[2013 + i][["DepartmentNumber-Numéro-de-Ministère", "AGRG_PYMT_AMT"]]
+    for index, row in funding_allocation.iterrows():
+        key = row['DepartmentNumber-Numéro-de-Ministère']
+        if key in department_dict.keys():
+            funding_allocation.at[index, 'DepartmentNumber-Numéro-de-Ministère'] = str(department_dict[key])[2:-2]
+        else:
+            funding_allocation.drop(index, axis=0)
+    department_spending = copy.deepcopy(funding_allocation)
+    department_spending = department_spending.groupby(["DepartmentNumber-Numéro-de-Ministère"], as_index=False).sum()
 
+    df_department_agg[2013 + i] = department_spending
+
+    df_annual_spending = pd.read_csv('transfer_payment.csv')
 class Page:
     def __init__(self, name, url):
         self.name = name
@@ -64,6 +70,7 @@ def build_table(data, height, width, name):
                         'color': 'red',
                     },
                 ],
+                selected_rows=[51],
                 style_as_list_view=True,
                 style_cell={
                     'textAlign': 'left',
@@ -159,7 +166,28 @@ def build_header(title, subparagraph):
         ],
         className="app__header",
     )
-
+def build_graph(title, id):
+    html.Div(
+        [
+            html.Div(
+                [
+                    html.H6(
+                        title, className="graph__title"
+                    )
+                ]
+            ),
+            dcc.Graph(
+                id=id,
+                figure=dict(
+                    layout=dict(
+                        plot_bgcolor=app_color["graph_bg"],
+                        paper_bgcolor=app_color["graph_bg"],
+                    )
+                ),
+            ),
+        ],
+        className="graph__container first",
+    ),
 
 d = {'Department': ['Department of Defence', 'Department of Agriculture'], 'Funding': [3, 4]}
 print(d)
@@ -181,12 +209,14 @@ federal_page = html.Div(
             build_year_slider()
         ], className='slider__container'),
         html.Div([
-            build_table(department_spending, 300, 300, "fed"),
+            build_table(df_department_agg[2019], 300, 300, "fed"),
+            build_graph('ANNUAL SPENDING', 'annual-spending'),
             html.Div(id='test'),
             html.Div(id='test2'),
         ], className="app__content"),
         build_pie("funding-allocation"),
-        build_spending_graph("funding-allocation")
+        #build_spending_graph("funding-allocation")
+        build_spending_graph('annual-spending'),
     ]
 )
 
@@ -238,6 +268,52 @@ def create_business_page(name, data):
 
     return html_div
 
+@app.callback(
+    #'test','children'
+    Output("annual-spending", "figure"),
+    [Input(component_id='table_fed', component_property='selected_rows')],
+)
+
+def spending_graph(selected_rows):
+    """
+    Genererate wind histogram graph.
+    :params interval: upadte the graph based on an interval
+    """
+
+    #will update to list later for year and total amount
+    # 001 will have to be changed to whatever was selected
+    print(department_spending.iloc[selected_rows])
+    names = department_spending.iloc[selected_rows]['DepartmentNumber-Numéro-de-Ministère']
+    names = names.tolist()
+
+    total_dict = {'2013':0,'2014':0,'2015':0,'2016':0,'2017':0,'2018':0,'2019':0}
+    years_list = [2013,2014,2015,2016,2017,2018,2019]
+
+    for department in range (len(df_annual_spending['DepartmentNumber-Numéro-de-Ministère'])):
+        if (df_annual_spending['DEPT_EN_DESC'][department] == names[0]):
+            for x in total_dict.keys():
+                if x==str(df_annual_spending['FSCL_YR'][department]):
+                    total_dict[f"{x}"] += df_annual_spending['AGRG_PYMT_AMT'][department]
+
+    data = [
+        dict(
+            x=years_list,
+            y=list(total_dict.values())
+        )
+    ]
+    layout = dict(
+        height=350,
+        plot_bgcolor=app_color["graph_bg"],
+        paper_bgcolor=app_color["graph_bg"],
+        font={"color": "#fff"},
+        autosize=False,
+        xaxis={'type': 'log', 'title': 'Year'},
+        yaxis={'title': 'Payment'},
+        margin={'l': 40, 'b': 40, 't': 10, 'r': 10},
+    )
+
+    return dict(data=data, layout=layout)
+
 
 @app.callback(
     Output(component_id='test', component_property='children'),
@@ -288,49 +364,6 @@ def funding_allocaton(selected_rows):
                         values=funding_allocation["AGRG_PYMT_AMT"].tolist(),
                         marker={'colors': ['#EF963B', '#C93277', '#349600', '#EF533B', '#57D4F1']}, textinfo='label')],
         "layout": go.Layout(title=f"Funding Allocation", margin={"l": 300, "r": 300, }, legend={"x": 1, "y": 0.7})}
-
-
-@app.callback(
-    #'test','children'
-    Output("annual-spending", "figure"),
-    [Input(component_id='table_fed', component_property='selected_rows')],
-)
-#actual graph
-def gen_wind_histogram(selected_rows):
-    """
-    Genererate wind histogram graph.
-    :params interval: upadte the graph based on an interval
-    """
-    print ('the columns are', df.columns)
-    #will update to list later for year and total amount
-    # 001 will have to be changed to whatever was selected
-    total_dict = {'2013':0,'2014':0,'2015':0,'2016':0,'2017':0,'2018':0,'2019':0}
-    years_list = [2013,2014,2015,2016,2017,2018,2019]
-
-    for department in range (len(df['DepartmentNumber-Numéro-de-Ministère'])):
-        if (df['DepartmentNumber-Numéro-de-Ministère'][department] == '001'):
-            for x in total_dict.keys():
-                if x==str(df['FSCL_YR'][department]):
-                    total_dict[f"{x}"] += df['AGRG_PYMT_AMT'][department]
-    data = [
-        dict(
-            x=years_list,
-            y=list(total_dict.values())
-        )
-    ]
-    layout = dict(
-        height=350,
-        plot_bgcolor=app_color["graph_bg"],
-        paper_bgcolor=app_color["graph_bg"],
-        font={"color": "#fff"},
-        autosize=False,
-        xaxis={'type': 'log', 'title': 'Year'},
-        yaxis={'title': 'Payment'},
-        margin={'l': 40, 'b': 40, 't': 10, 'r': 10},
-    )
-
-    return dict(data=data, layout=layout)
-
 
 
 if __name__ == '__main__':
