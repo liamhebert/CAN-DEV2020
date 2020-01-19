@@ -16,13 +16,15 @@ class Page:
 
 
 def build_table(data, height, width, name):
+    data_dict = data.to_dict('records')
+    for line in data_dict:
+        line['Funding'] = "${:,.2f}".format(line['Funding'])
     return dash_table.DataTable(
         id='table_' + name,
-        data=data.to_dict('records'),
+        data=data_dict,
         columns=[{"name": i, "id": i} for i in df.columns],
         style_cell={'textAlign': 'left'},
         row_selectable="multi",
-        selected_rows=[],
         style_data_conditional=[
             {
                 'if': {
