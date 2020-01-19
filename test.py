@@ -53,7 +53,9 @@ def build_table(data, height, width, name):
                     'overflowY': 'scroll',
                     'overflowX': 'ellipse',
                     'backgroundColor': '#082255',
+                    'border-radius': '0.55rem',
                     'padding': '20px',
+                    'box-shadow': '0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24)'
                 }),
 
         ], className="wind__speed__container one-third column")
@@ -125,7 +127,7 @@ federal_page = html.Div(
         build_header("Federal Overview", "Government funding per department"),
         html.Div([
             build_year_slider()
-        ], className='wind__speed__container'),
+        ], className='slider__container'),
         html.Div([
             build_table(df, 300, 300, "fed"),
             html.Div(id='test'),
