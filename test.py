@@ -3,11 +3,14 @@ import copy
 import dash
 import dash_table
 import dash_html_components as html
-from alpha_vantage.timeseries import TimeSeries
+#from alpha_vantage.timeseries import TimeSeries
 from dash.dependencies import Input, Output
 import dash_core_components as dcc
 import pickle
 import pandas as pd
+import plotly.graph_objs as go
+
+app_color = {"graph_bg": "#082255", "graph_line": "#007ACE"}
 
 df = pd.read_csv('pt-tp-2019-eng.csv', usecols=['FSCL_YR', 'MINC', 'DepartmentNumber-Numéro-de-Ministère',
         'RCPNT_CLS_EN_DESC', 'RCPNT_NML_EN_DESC', 'CTY_EN_NM',
@@ -86,6 +89,16 @@ def build_year_slider():
         updatemode='drag'
     )
 
+def build_pie(id):
+
+    return html.Div([
+                        html.Div(
+                                dcc.Graph(id=id,
+                                )
+                        )],
+                            className="pie_graph__container",
+                        )
+
 
 def build_nav_stack(stack):
     children = []
@@ -148,7 +161,8 @@ federal_page = html.Div(
             build_table(department_spending, 300, 300, "fed"),
             html.Div(id='test'),
             html.Div(id='test2'),
-        ], className="app__content")
+        ], className="app__content"),
+        build_pie("funding-allocation")
     ]
 )
 
@@ -165,7 +179,8 @@ def create_department_page(name, data):
             build_nav_stack(nav_stack),
             build_header(name.replace("_", " ") + " Overview", "Funding given to each program by the " + name),
             build_year_slider(),
-            build_table(df, height=400, width=None, name="dept")
+            build_table(df, height=400, width=None, name="dept"),
+            html.Div(id='funding-allocation')
         ]
     )
 
@@ -236,9 +251,24 @@ def load_page(url):
     else:
         return '404'
 
+@app.callback(
+    Output(component_id='funding-allocation', component_property='figure'),
+    [Input(component_id='table_fed', component_property='selected_rows')],
+)
+def funding_allocaton(selected_rows):
+    funding_allocation = department_spending.iloc[selected_rows]
+
+    funding_allocation["AGRG_PYMT_AMT"].astype(int)
+    return {
+        "data": [go.Pie(labels=funding_allocation["DepartmentNumber-Numéro-de-Ministère"].tolist(),
+                        values=funding_allocation["AGRG_PYMT_AMT"].tolist(),
+                        marker={'colors': ['#EF963B', '#C93277', '#349600', '#EF533B', '#57D4F1']}, textinfo='label')],
+        "layout": go.Layout(title=f"Funding Allocation", margin={"l": 300, "r": 300, }, legend={"x": 1, "y": 0.7})}
+
 
 if __name__ == '__main__':
     # ts = TimeSeries(key='TRNGRDL7KZKFC5SD', output_format='pandas')
     # data, meta_data = ts.get_monthly(symbol='MSFT')
     # print(data)
     app.run_server(debug=True)
+
