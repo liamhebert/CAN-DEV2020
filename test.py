@@ -20,28 +20,43 @@ def build_table(data, height, width, name):
     data_dict = data.to_dict('records')
     for line in data_dict:
         line['Funding'] = "${:,.2f}".format(line['Funding'])
-    return dash_table.DataTable(
-        id='table_' + name,
-        data=data_dict,
-        columns=[{"name": i, "id": i} for i in df.columns],
-        style_cell={'textAlign': 'left'},
-        row_selectable="multi",
-        style_data_conditional=[
-            {
-                'if': {
-                    'column_id': 'Generation (GWh)',
-                    'filter_query': '{Generation (GWh)} > 500'
+    return html.Div(
+        [
+            dash_table.DataTable(
+                id='table_' + name,
+                data=data_dict,
+                columns=[{"name": i, "id": i} for i in df.columns],
+                row_selectable="multi",
+                style_data_conditional=[
+                    {
+                        'if': {
+                            'column_id': 'Funding',
+                            'filter_query': '{Funding} > 0'
+                        },
+                        'color': 'green',
+                    },
+                    {
+                        'if': {
+                            'column_id': 'Funding',
+                            'filter_query': '{Funding} < 0'
+                        },
+                        'color': 'red',
+                    },
+                ],
+                style_as_list_view=True,
+                style_cell={
+                    'textAlign': 'left',
+                    'backgroundColor': '#082255',
+                    'color': 'white'
                 },
-                'color': 'red',
-            },
-        ],
-        style_table={
-            'maxHeight': '{}px'.format(height),
-            'maxWidth': '{}px'.format(width),
-            'overflowY': 'scroll',
-            'overflowX': 'ellipse'
-        },
-    )
+                style_table={
+                    'overflowY': 'scroll',
+                    'overflowX': 'ellipse',
+                    'backgroundColor': '#082255',
+                    'padding': '20px',
+                }),
+
+        ], className="wind__speed__container one-third column")
 
 
 def build_year_slider():
@@ -96,22 +111,26 @@ d = {'Department': ['Department of Defence', 'Department of Agriculture'], 'Fund
 print(d)
 df = pd.DataFrame(data=d)
 
-app = dash.Dash(__name__)
+app = dash.Dash(__name__, meta_tags=[{"name": "viewport", "content": "width=device-width, initial-scale=1"}])
 app.config.suppress_callback_exceptions = True
 app.layout = html.Div([
     dcc.Location(id='url', refresh=False),
     html.Div(id='content'),
-])
+], className="app__container")
 
 federal_page = html.Div(
     children=[
         # dcc.Location(id='url', href="/federal"),
         build_nav_stack([Page('Federal Overview', '\\')]),
         build_header("Federal Overview", "Government funding per department"),
-        build_year_slider(),
-        build_table(df, 300, 300, "fed"),
-        html.Div(id='test'),
-        html.Div(id='test2'),
+        html.Div([
+            build_year_slider()
+        ], className='wind__speed__container'),
+        html.Div([
+            build_table(df, 300, 300, "fed"),
+            html.Div(id='test'),
+            html.Div(id='test2'),
+        ], className="app__content")
     ]
 )
 
@@ -201,7 +220,7 @@ def load_page(url):
 
 
 if __name__ == '__main__':
-    ts = TimeSeries(key='TRNGRDL7KZKFC5SD', output_format='pandas')
-    data, meta_data = ts.get_monthly(symbol='MSFT')
-    print(data)
+    # ts = TimeSeries(key='TRNGRDL7KZKFC5SD', output_format='pandas')
+    # data, meta_data = ts.get_monthly(symbol='MSFT')
+    # print(data)
     app.run_server(debug=True)
