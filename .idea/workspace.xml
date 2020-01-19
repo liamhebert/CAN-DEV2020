@@ -1,14 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="98b0bc56-adf7-441d-a6c8-dd75bcc510bf" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/department.p" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/pt-tp-2019-eng.csv" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test1.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/CAN-DEV2020.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/CAN-DEV2020.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+    <list default="true" id="98b0bc56-adf7-441d-a6c8-dd75bcc510bf" name="Default Changelist" comment="Things look fancy">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/assets/style.css" beforeDir="false" afterPath="$PROJECT_DIR$/assets/style.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test.py" beforeDir="false" afterPath="$PROJECT_DIR$/test.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -80,7 +75,7 @@
       <recent name="$PROJECT_DIR$" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.test2">
+  <component name="RunManager" selected="Python.test1">
     <configuration name="test" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="CAN-DEV2020" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -104,15 +99,15 @@
       <method v="2" />
     </configuration>
     <configuration name="test1" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
-      <module name="CAN-DEV2020" />
+      <module name="CAN-DEV20202" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
       <envs>
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
-      <option name="SDK_HOME" value="" />
+      <option name="SDK_HOME" value="$USER_HOME$/.conda/envs/CAN-DEV2020/bin/python" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
-      <option name="IS_MODULE_SDK" value="true" />
+      <option name="IS_MODULE_SDK" value="false" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/test1.py" />
@@ -147,8 +142,8 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Python.test2" />
         <item itemvalue="Python.test1" />
+        <item itemvalue="Python.test2" />
         <item itemvalue="Python.test" />
       </list>
     </recent_temporary>
@@ -247,6 +242,10 @@
       <screen x="0" y="0" width="1440" height="900" />
     </state>
     <state x="184" y="112" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.1440.900@0.0.1440.900" timestamp="1579417748855" />
+    <state x="415" y="76" key="#test1" timestamp="1579447396328">
+      <screen x="0" y="0" width="1440" height="900" />
+    </state>
+    <state x="415" y="76" key="#test1/0.0.1440.900@0.0.1440.900" timestamp="1579447396328" />
     <state x="415" y="46" key="#test2" timestamp="1579428220576">
       <screen x="0" y="0" width="1440" height="900" />
     </state>
@@ -255,26 +254,26 @@
       <screen x="0" y="0" width="1440" height="900" />
     </state>
     <state x="477" y="328" key="ANALYSIS_DLG_com.intellij.analysis.BaseAnalysisAction$1/0.0.1440.900@0.0.1440.900" timestamp="1579423603871" />
-    <state x="303" y="52" key="CommitChangelistDialog2" timestamp="1579422633978">
+    <state x="303" y="52" key="CommitChangelistDialog2" timestamp="1579448119455">
       <screen x="0" y="0" width="1440" height="900" />
     </state>
-    <state x="303" y="52" key="CommitChangelistDialog2/0.0.1440.900@0.0.1440.900" timestamp="1579422633978" />
-    <state width="1419" height="190" key="GridCell.Tab.0.bottom" timestamp="1579430452909">
+    <state x="303" y="52" key="CommitChangelistDialog2/0.0.1440.900@0.0.1440.900" timestamp="1579448119455" />
+    <state width="1419" height="321" key="GridCell.Tab.0.bottom" timestamp="1579447881662">
       <screen x="0" y="0" width="1440" height="900" />
     </state>
-    <state width="1419" height="190" key="GridCell.Tab.0.bottom/0.0.1440.900@0.0.1440.900" timestamp="1579430452909" />
-    <state width="1419" height="190" key="GridCell.Tab.0.center" timestamp="1579430452908">
+    <state width="1419" height="321" key="GridCell.Tab.0.bottom/0.0.1440.900@0.0.1440.900" timestamp="1579447881662" />
+    <state width="1419" height="321" key="GridCell.Tab.0.center" timestamp="1579447881661">
       <screen x="0" y="0" width="1440" height="900" />
     </state>
-    <state width="1419" height="190" key="GridCell.Tab.0.center/0.0.1440.900@0.0.1440.900" timestamp="1579430452908" />
-    <state width="1419" height="190" key="GridCell.Tab.0.left" timestamp="1579430452908">
+    <state width="1419" height="321" key="GridCell.Tab.0.center/0.0.1440.900@0.0.1440.900" timestamp="1579447881661" />
+    <state width="1419" height="321" key="GridCell.Tab.0.left" timestamp="1579447881660">
       <screen x="0" y="0" width="1440" height="900" />
     </state>
-    <state width="1419" height="190" key="GridCell.Tab.0.left/0.0.1440.900@0.0.1440.900" timestamp="1579430452908" />
-    <state width="1419" height="190" key="GridCell.Tab.0.right" timestamp="1579430452909">
+    <state width="1419" height="321" key="GridCell.Tab.0.left/0.0.1440.900@0.0.1440.900" timestamp="1579447881660" />
+    <state width="1419" height="321" key="GridCell.Tab.0.right" timestamp="1579447881661">
       <screen x="0" y="0" width="1440" height="900" />
     </state>
-    <state width="1419" height="190" key="GridCell.Tab.0.right/0.0.1440.900@0.0.1440.900" timestamp="1579430452909" />
+    <state width="1419" height="321" key="GridCell.Tab.0.right/0.0.1440.900@0.0.1440.900" timestamp="1579447881661" />
     <state x="221" y="89" key="SettingsEditor" timestamp="1579423556367">
       <screen x="0" y="0" width="1440" height="900" />
     </state>
